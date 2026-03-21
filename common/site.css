@@ -517,6 +517,59 @@ li {
   text-decoration: underline;
 }
 
+.program-day + .program-day {
+  margin-top: 28px;
+}
+
+.program-day h3 {
+  margin: 0 0 12px;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.program-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.98rem;
+  border: 1px solid rgba(31, 36, 48, 0.18);
+}
+
+.program-table th,
+.program-table td {
+  padding: 12px 14px;
+  border: 1px solid rgba(31, 36, 48, 0.18);
+  vertical-align: top;
+}
+
+.program-table th {
+  width: 140px;
+  text-align: left;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.program-table td {
+  font-weight: 700;
+}
+
+.program-table td.program-detail {
+  font-weight: 400;
+}
+
+.program-table tr:nth-child(odd) th,
+.program-table tr:nth-child(odd) td {
+  background: rgba(31, 36, 48, 0.03);
+}
+
+.access-lines p {
+  margin: 0;
+}
+
+.access-lines p + p {
+  margin-top: 10px;
+}
+
 .related-links {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -738,23 +791,35 @@ code {
 }
 
 body.theme-dark {
+  position: relative;
   color: #f3f1ec;
+  background: #151821;
+}
+
+body.theme-dark::before {
+  content: "";
+  position: fixed;
+  inset: 0;
   background:
-    radial-gradient(circle at top left, rgba(128, 0, 32, 0.22), transparent 28%),
-    radial-gradient(circle at top right, rgba(74, 42, 132, 0.22), transparent 32%),
+    linear-gradient(rgba(8, 10, 18, 0.42), rgba(8, 10, 18, 0.52)),
+    url("../202606_3rd_ws/image2.png") center top / min(1024px, 100vw) auto no-repeat,
     #151821;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .theme-dark .page {
+  position: relative;
+  z-index: 1;
   padding-top: 32px;
 }
 
 .theme-dark .hero,
 .theme-dark .panel,
 .theme-dark .event-card {
-  background: rgba(28, 33, 48, 0.88);
+  background: rgba(28, 33, 48, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.24);
+  box-shadow: none;
 }
 
 .theme-dark .hero {
@@ -780,6 +845,23 @@ body.theme-dark {
   color: rgba(243, 241, 236, 0.8);
 }
 
+.theme-dark .hero-subtitle {
+  color: rgba(255, 245, 236, 0.92);
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  font-size: 20px;
+  letter-spacing: 0.06em;
+}
+
+.theme-dark .section-kicker,
+.theme-dark .eyebrow {
+  background: linear-gradient(90deg, #d86a86 0%, #a993ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 .theme-dark .note {
   background: rgba(74, 42, 132, 0.16);
   border-left-color: #8a73cf;
@@ -787,6 +869,24 @@ body.theme-dark {
 
 .theme-dark .panel {
   border-left-color: rgba(138, 115, 207, 0.28);
+}
+
+.theme-dark .program-day h3 {
+  color: rgba(255, 245, 236, 0.92);
+}
+
+.theme-dark .program-table th,
+.theme-dark .program-table td {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.theme-dark .program-table {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.theme-dark .program-table tr:nth-child(odd) th,
+.theme-dark .program-table tr:nth-child(odd) td {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .theme-dark .tag {
