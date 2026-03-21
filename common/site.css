@@ -305,6 +305,12 @@ li {
   border-bottom: 1px solid var(--line);
 }
 
+.filter-bar-secondary {
+  margin-top: -1px;
+  padding-top: 14px;
+  border-top: 0;
+}
+
 .filter-label {
   margin-right: 6px;
   color: var(--muted);
@@ -325,6 +331,10 @@ li {
   font-weight: 600;
   cursor: pointer;
   transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.filter-chip-secondary {
+  opacity: 0.92;
 }
 
 .filter-chip:hover,
@@ -456,6 +466,66 @@ li {
   color: var(--muted);
 }
 
+.sort-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.year-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.sort-chip {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--text);
+  padding: 8px 14px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+
+.sort-chip:hover,
+.sort-chip:focus-visible {
+  border-color: var(--line-strong);
+}
+
+.sort-chip.is-active {
+  border-color: rgba(31, 36, 48, 0.18);
+  background: rgba(31, 36, 48, 0.06);
+  color: var(--text);
+}
+
+.year-chip {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--text);
+  padding: 8px 14px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+
+.year-chip:hover,
+.year-chip:focus-visible {
+  border-color: var(--line-strong);
+}
+
+.year-chip.is-active {
+  border-color: rgba(31, 36, 48, 0.18);
+  background: rgba(31, 36, 48, 0.06);
+  color: var(--text);
+}
+
 .archive-list {
   display: grid;
   gap: 18px;
@@ -528,6 +598,13 @@ li {
   margin-top: 12px;
 }
 
+.archive-citation {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+
 .archive-links a {
   color: var(--secondary);
   font-weight: 700;
@@ -582,6 +659,34 @@ li {
 .program-table tr:nth-child(odd) th,
 .program-table tr:nth-child(odd) td {
   background: rgba(31, 36, 48, 0.03);
+}
+
+.photo-figure {
+  margin: 0;
+}
+
+.photo-image {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.speaker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 18px;
+}
+
+.speaker-card h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.speaker-card p {
+  margin: 4px 0 0;
+  color: var(--muted);
 }
 
 .access-lines p {
@@ -838,6 +943,10 @@ code {
     gap: 8px;
   }
 
+  .speaker-grid {
+    grid-template-columns: 1fr;
+  }
+
 }
 
 body.theme-dark {
@@ -858,6 +967,13 @@ body.theme-dark::before {
   z-index: 0;
 }
 
+body.theme-dark-first-workshop::before {
+  background:
+    linear-gradient(rgba(8, 10, 18, 0.42), rgba(8, 10, 18, 0.52)),
+    url("../202310_1st_workshop/%E5%9B%B31.jpg") center top / min(1024px, 100vw) auto no-repeat,
+    #151821;
+}
+
 .theme-dark .page {
   position: relative;
   z-index: 1;
@@ -871,6 +987,7 @@ body.theme-dark::before {
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: none;
 }
+
 
 .theme-dark .hero {
   background: transparent;

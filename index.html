@@ -1,10 +1,10 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CTQA Event Hub</title>
-  <meta name="description" content="Chicago-Tohoku Quantum Alliance workshops and seminars hub.">
+  <title>CTQA Activities and Updates</title>
+  <meta name="description" content="Chicago-Tohoku Quantum Alliance activities, archive entries, and selected research highlights.">
   <link rel="icon" type="image/svg+xml" href="./common/favicon.svg">
   <link rel="stylesheet" href="./common/site.css">
   <script defer src="./common/tag-filter.js"></script>
@@ -37,23 +37,52 @@
         </div>
       </div>
       <h1>Chicago-Tohoku<br>Quantum Alliance</h1>
-      <p class="hero-subtitle">CTQA Event Hub</p>
+      <p class="hero-subtitle">CTQA Activities and Updates</p>
+    </section>
+
+    <section class="section section-split">
+      <div class="panel">
+        <p class="section-kicker">About CTQA</p>
+        <h2>Collaboration and Exchange</h2>
+        <p class="body-copy">The Chicago-Tohoku Quantum Alliance (CTQA) is a trans-Pacific initiative connecting Tohoku University and the University of Chicago in quantum science and technology.</p>
+        <p class="body-copy">CTQA promotes research exchange and collaborative activities in quantum materials, spin-based systems, quantum information science, and related enabling technologies.</p>
+        <p class="body-copy">Its activities include workshops, seminars, outreach programs, researcher visits, and selected research highlights connected to the alliance.</p>
+      </div>
+      <div class="panel">
+        <p class="section-kicker">Selected Outcomes</p>
+        <h2>Selected CTQA Research Highlights</h2>
+        <ul class="meta-list">
+          <li>CTQA-Linked Paper on Spinel Color Centers, <em>Applied Physics Express</em> (2024)</li>
+          <li>Paper on Two-Dimensional Materials, <em>npj 2D Materials and Applications</em> (2025)</li>
+          <li>JSAP Paper Award for CTQA-Linked Paper on Spinel Color Centers (2026)</li>
+        </ul>
+        <p class="body-copy">The archive below presents CTQA activities and selected research highlights in chronological order.</p>
+      </div>
     </section>
 
     <section class="section filter-section" aria-label="Event filters">
+      <div class="sort-bar" aria-label="Chronological sort order">
+        <button class="sort-chip is-active" type="button" data-sort="desc" aria-pressed="true">Newest first</button>
+        <button class="sort-chip" type="button" data-sort="asc" aria-pressed="false">Oldest first</button>
+      </div>
+      <div class="year-bar" data-year-bar aria-label="Year filters">
+        <button class="year-chip is-active" type="button" data-year="all" aria-pressed="true">All years</button>
+      </div>
       <div class="filter-bar" data-filter-bar>
         <button class="filter-chip is-active" type="button" data-filter="all" aria-pressed="true">All</button>
-        <button class="filter-chip" type="button" data-filter="workshop" aria-pressed="false">Workshop</button>
-        <button class="filter-chip" type="button" data-filter="seminar" aria-pressed="false">Seminar</button>
-        <button class="filter-chip" type="button" data-filter="symposium" aria-pressed="false">Symposium</button>
-        <button class="filter-chip" type="button" data-filter="startup" aria-pressed="false">Startup</button>
-        <button class="filter-chip" type="button" data-filter="outreach" aria-pressed="false">Outreach</button>
-        <button class="filter-chip" type="button" data-filter="interaction" aria-pressed="false">Interaction</button>
-        <button class="filter-chip" type="button" data-filter="launch" aria-pressed="false">Launch</button>
+        <button class="filter-chip" type="button" data-filter="event" aria-pressed="false">Event</button>
+        <button class="filter-chip" type="button" data-filter="visit" aria-pressed="false">Visit</button>
         <button class="filter-chip" type="button" data-filter="paper" aria-pressed="false">Paper</button>
-        <button class="filter-chip" type="button" data-filter="sendai" aria-pressed="false">Sendai</button>
-        <button class="filter-chip" type="button" data-filter="chicago" aria-pressed="false">Chicago</button>
-        <button class="filter-chip" type="button" data-filter="tokyo" aria-pressed="false">Tokyo</button>
+        <button class="filter-chip" type="button" data-filter="award" aria-pressed="false">Award</button>
+        <button class="filter-chip" type="button" data-filter="outreach" aria-pressed="false">Outreach</button>
+      </div>
+      <div class="filter-bar filter-bar-secondary" aria-label="Activity type filters">
+        <button class="filter-chip filter-chip-secondary" type="button" data-filter="workshop" aria-pressed="false">Workshop</button>
+        <button class="filter-chip filter-chip-secondary" type="button" data-filter="seminar" aria-pressed="false">Seminar</button>
+        <button class="filter-chip filter-chip-secondary" type="button" data-filter="symposium" aria-pressed="false">Symposium</button>
+        <button class="filter-chip filter-chip-secondary" type="button" data-filter="startup" aria-pressed="false">Startup</button>
+        <button class="filter-chip filter-chip-secondary" type="button" data-filter="interaction" aria-pressed="false">Interaction</button>
+        <button class="filter-chip filter-chip-secondary" type="button" data-filter="launch" aria-pressed="false">Launch</button>
       </div>
     </section>
 
@@ -66,12 +95,12 @@
 
       <div class="panel">
         <div class="archive-list">
-          <article class="archive-item" data-tags="workshop sendai">
-            <div class="archive-date">June 29-30, 2026</div>
+          <article class="archive-item" data-tags="event workshop" data-date="2026-06-29">
+            <div class="archive-date">June 29&ndash;30, 2026</div>
             <div class="archive-body">
               <h3><a class="archive-title-link" href="./202606_3rd_workshop/index.html">3rd Workshop on the Chicago-Tohoku Quantum Alliance</a></h3>
               <p class="archive-meta">CTQA Workshop</p>
-              <p class="body-copy">Scheduled for June 29-30, 2026 in Sendai, the third CTQA workshop will bring together alliance members for research exchange and future collaboration.</p>
+              <p class="body-copy">Scheduled for June 29&ndash;30, 2026 in Sendai, the third CTQA workshop will bring together alliance members for research exchange and future collaboration.</p>
               <p class="archive-links">
                 <a href="./202606_3rd_workshop/index.html">Event page</a>
               </p>
@@ -84,55 +113,47 @@
     <section class="section filter-section-target" id="past-events" data-section>
       <div class="section-heading">
         <div>
-          <h2>Past Events</h2>
+          <h2>Timeline</h2>
         </div>
       </div>
 
       <div class="panel">
         <div class="archive-list">
-          <article class="archive-item" data-tags="seminar sendai">
-            <div class="archive-date">November 21, 2025</div>
+          <article class="archive-item" data-tags="award" data-date="2026-03-15">
+            <div class="archive-date">March 15, 2026</div>
             <div class="archive-body">
-              <h3><a class="archive-title-link" href="./202511_4th_seminar/index.html">4th Seminar of the Chicago-Tohoku Quantum Alliance</a></h3>
-              <p class="archive-meta">CTQA Seminar</p>
-              <p class="body-copy">The fourth CTQA seminar featured Dr. S. Carin Gavin and was held at RIEC, Tohoku University, in Sendai.</p>
+              <h3><a class="archive-title-link" href="./202603_jsap_paper_award/index.html">JSAP Paper Award for CTQA-Linked Paper on Spinel Color Centers</a></h3>
+              <p class="archive-meta">The Japan Society of Applied Physics</p>
+              <p class="body-copy">The CTQA-linked spinel color center paper received the JSAP Paper Award on March 15, 2026.</p>
               <p class="archive-links">
-                <a href="https://gp-spin.tohoku.ac.jp/en/news/images/2511_flyer_c.gavin" target="_blank" rel="noreferrer">Flyer</a>
+                <a href="./202407_spinel_color_center_paper/index.html">Related paper</a>
+                <a href="https://doi.org/10.35848/1882-0786/ad59f4" target="_blank" rel="noreferrer">DOI</a>
               </p>
             </div>
           </article>
 
-          <article class="archive-item" data-tags="workshop chicago">
-            <div class="archive-date">May 15-16, 2025</div>
+          <article class="archive-item" data-tags="paper" data-date="2026-03-05">
+            <div class="archive-date">March 5, 2026</div>
             <div class="archive-body">
-              <h3><a class="archive-title-link" href="./202505_2nd_workshop/index.html">2nd Workshop on the Chicago-Tohoku Quantum Alliance</a></h3>
-              <p class="archive-meta">University of Chicago</p>
-              <p class="body-copy">The second CTQA workshop was held in Chicago and later referenced in Tohoku University coverage.</p>
+              <h3><a class="archive-title-link" href="./202603_mrs_bulletin_paper/index.html">Paper on Isotope Engineering</a></h3>
+              <p class="archive-meta">MRS Bulletin (2026)</p>
+              <p class="body-copy">An MRS Bulletin paper on isotope engineering by Prof. Shun Kanai and collaborators was published on March 5, 2026.</p>
+              <p class="archive-citation">Citation: Kanai, S., Suzuki, S., and Anderson, C. P. A unified periodic table of quantum coherence for isotope engineering. MRS Bulletin, 1-6 (2026). https://doi.org/10.1557/s43577-025-01052-0</p>
               <p class="archive-links">
-                <a href="https://www.tohoku.ac.jp/japanese/2025/06/news20250604-qa.html" target="_blank" rel="noreferrer">Tohoku news coverage</a>
-                <a href="https://www.r-info.tohoku.ac.jp/en/e3b43a53206e0c9acbb307e0ad424c6e.html" target="_blank" rel="noreferrer">Supporting reference</a>
+                <a href="https://link.springer.com/article/10.1557/s43577-025-01052-0" target="_blank" rel="noreferrer">MRS Bulletin article</a>
+                <a href="https://doi.org/10.1557/s43577-025-01052-0" target="_blank" rel="noreferrer">DOI</a>
+                <a href="https://link.springer.com/content/pdf/10.1557/s43577-025-01052-0.pdf" target="_blank" rel="noreferrer">PDF</a>
               </p>
             </div>
           </article>
 
-          <article class="archive-item" data-tags="outreach sendai">
-            <div class="archive-date">October 11, 2025</div>
-            <div class="archive-body">
-              <h3><a class="archive-title-link" href="./202510_riec_open_house_exhibit/index.html">RIEC Open House 2025 Exhibit</a></h3>
-              <p class="archive-meta">Research Institute of Electrical Communication, Tohoku University</p>
-              <p class="body-copy">A CTQA-related exhibit was presented at RIEC Open House 2025 with collaborators from the University of Chicago, featuring hands-on quantum-themed activities and games for visitors.</p>
-              <p class="archive-links">
-                <a href="https://www.spin.riec.tohoku.ac.jp/en/archives/4777" target="_blank" rel="noreferrer">Laboratory news report</a>
-              </p>
-            </div>
-          </article>
-
-          <article class="archive-item" data-tags="paper">
+          <article class="archive-item" data-tags="paper" data-date="2025-11-28">
             <div class="archive-date">November 28, 2025</div>
             <div class="archive-body">
-              <h3><a class="archive-title-link" href="./202511_toriyama_paper/index.html">CTQA-Linked Paper on Two-Dimensional Materials</a></h3>
+              <h3><a class="archive-title-link" href="./202511_toriyama_paper/index.html">Paper on Two-Dimensional Materials</a></h3>
               <p class="archive-meta">npj 2D Materials and Applications (2025)</p>
-              <p class="body-copy">A CTQA-linked paper on strategies to search for two-dimensional materials with long spin qubit coherence time was highlighted by Tohoku University in November 2025.</p>
+              <p class="body-copy">A paper on strategies to search for two-dimensional materials with long spin qubit coherence time was highlighted by Tohoku University in November 2025.</p>
+              <p class="archive-citation">Citation: Toriyama, M. Y., Zhan, J., Kanai, S. et al. Strategies to search for two-dimensional materials with long spin qubit coherence time. npj 2D Mater. Appl. 9, 108 (2025). https://doi.org/10.1038/s41699-025-00623-8</p>
               <p class="archive-links">
                 <a href="https://www.nature.com/articles/s41699-025-00623-8" target="_blank" rel="noreferrer">Nature paper</a>
                 <a href="https://www.tohoku.ac.jp/japanese/2025/11/press20251128-01-bit.html" target="_blank" rel="noreferrer">Tohoku University press release</a>
@@ -140,12 +161,98 @@
             </div>
           </article>
 
-          <article class="archive-item" data-tags="paper">
-            <div class="archive-date">January 27, 2025</div>
+          <article class="archive-item" data-tags="event seminar" data-date="2025-11-21">
+            <div class="archive-date">November 21, 2025</div>
             <div class="archive-body">
-              <h3><a class="archive-title-link" href="./202501_first_ctqa_paper/index.html">First CTQA-Linked Paper Featured by Tohoku University</a></h3>
-              <p class="archive-meta">Applied Physics Express (2024) / JSAP Paper Award (March 15, 2026)</p>
-              <p class="body-copy">Tohoku University described the paper by M. Kawahara and collaborators as the first paper resulting from the Chicago-Tohoku Quantum Alliance. The paper later received the JSAP Paper Award on March 15, 2026.</p>
+              <h3><a class="archive-title-link" href="./202511_4th_seminar/index.html">4th Seminar of the Chicago-Tohoku Quantum Alliance</a></h3>
+              <p class="archive-meta">CTQA Seminar</p>
+              <p class="body-copy">The fourth CTQA seminar featured Dr. S. Carin Gavin on mixed-dimensional heterostructures and was held at RIEC, Tohoku University, in Sendai.</p>
+              <p class="archive-links">
+                <a href="https://gp-spin.tohoku.ac.jp/en/news/" target="_blank" rel="noreferrer">GP-Spin news</a>
+                <a href="https://gp-spin.tohoku.ac.jp/en/news/images/2511_flyer_c.gavin" target="_blank" rel="noreferrer">Flyer</a>
+              </p>
+            </div>
+          </article>
+
+          <article class="archive-item" data-tags="outreach" data-date="2025-10-11">
+            <div class="archive-date">October 11, 2025</div>
+            <div class="archive-body">
+              <h3><a class="archive-title-link" href="./202510_riec_open_house_exhibit/index.html">RIEC Open House 2025 Exhibit</a></h3>
+              <p class="archive-meta">Research Institute of Electrical Communication, Tohoku University</p>
+              <p class="body-copy">A CTQA exhibit was presented at RIEC Open House 2025 with collaborators from the University of Chicago, featuring hands-on quantum-themed activities and games for visitors.</p>
+              <p class="archive-links">
+                <a href="https://www.spin.riec.tohoku.ac.jp/en/archives/4777" target="_blank" rel="noreferrer">Laboratory news report</a>
+              </p>
+            </div>
+          </article>
+
+          <article class="archive-item" data-tags="outreach" data-date="2025-07-30">
+            <div class="archive-date">July 30&ndash;31, 2025</div>
+            <div class="archive-body">
+              <h3><a class="archive-title-link" href="./202507_open_campus_exhibit/index.html">Tohoku University Open Campus 2025 Exhibit</a></h3>
+              <p class="archive-meta">Tohoku University, Sendai</p>
+              <p class="body-copy">CTQA activities were presented during Tohoku University Open Campus 2025 through a special exhibition developed with the University of Chicago and highlighted during the International Year of Quantum.</p>
+              <p class="archive-links">
+                <a href="https://web.tohoku.ac.jp/ged/14154" target="_blank" rel="noreferrer">GED article</a>
+                <a href="https://www.tohoku.ac.jp/en/news/international_visit/quantum_games_open_campus_collab_with_university_of_chicago_2025.html" target="_blank" rel="noreferrer">English news</a>
+                <a href="https://www.tohoku.ac.jp/japanese/2025/08/news20250822-quantum.html" target="_blank" rel="noreferrer">Japanese news</a>
+                <a href="https://stagecenter.uchicago.edu/2025/08/04/tohoku-open-campus-2025/" target="_blank" rel="noreferrer">STAGE Center report</a>
+              </p>
+            </div>
+          </article>
+
+          <article class="archive-item" data-tags="event workshop" data-date="2025-05-15">
+            <div class="archive-date">May 15&ndash;16, 2025</div>
+            <div class="archive-body">
+              <h3><a class="archive-title-link" href="./202505_2nd_workshop/index.html">2nd Workshop on the Chicago-Tohoku Quantum Alliance</a></h3>
+              <p class="archive-meta">University of Chicago</p>
+              <p class="body-copy">The second CTQA workshop brought together participants from Tohoku University, the University of Chicago, and Argonne National Laboratory in Chicago, with a full two-day agenda at the David Rubenstein Forum.</p>
+              <p class="archive-links">
+                <a href="https://voices.uchicago.edu/ctqworkshop/" target="_blank" rel="noreferrer">UChicago workshop page</a>
+                <a href="https://www.tohoku.ac.jp/japanese/2025/06/news20250604-qa.html" target="_blank" rel="noreferrer">Tohoku news coverage</a>
+                <a href="https://www.spin.riec.tohoku.ac.jp/en/archives/3211" target="_blank" rel="noreferrer">Laboratory participation note</a>
+              </p>
+            </div>
+          </article>
+
+          <article class="archive-item" data-tags="visit" data-date="2024-10-25">
+            <div class="archive-date">October 25, 2024</div>
+            <div class="archive-body">
+              <h3><a class="archive-title-link" href="./202410_kanai_chicago_quantum_summit_visit/index.html">Prof. Shun Kanai Visit to the University of Chicago and Chicago Quantum Summit</a></h3>
+              <p class="archive-meta">Visit</p>
+              <p class="body-copy">Prof. Shun Kanai visited the University of Chicago during Chicago Quantum Summit week.</p>
+            </div>
+          </article>
+
+          <article class="archive-item" data-tags="visit" data-date="2024-10-28">
+            <div class="archive-date">October 28, 2024</div>
+            <div class="archive-body">
+              <h3><a class="archive-title-link" href="./202410_heremans_pingault_tohoku_visit/index.html">Prof. F. Joseph Heremans and Dr. Benjamin Pingault Visit to Tohoku University</a></h3>
+              <p class="archive-meta">Visit</p>
+              <p class="body-copy">Prof. F. Joseph Heremans and Dr. Benjamin Pingault visited Tohoku University during a CTQA visit.</p>
+            </div>
+          </article>
+
+          <article class="archive-item" data-tags="event seminar" data-date="2024-08-01">
+            <div class="archive-date">August 1, 2024</div>
+            <div class="archive-body">
+              <h3><a class="archive-title-link" href="./202408_3rd_seminar/index.html">3rd Seminar of the Chicago-Tohoku Quantum Alliance</a></h3>
+              <p class="archive-meta">Tohoku University, Sendai</p>
+              <p class="body-copy">The third CTQA seminar featured Dr. Joseph Heremans and Dr. Benjamin Pingault at RIEC, Tohoku University.</p>
+              <p class="archive-links">
+                <a href="https://www.tohoku.ac.jp/en/" target="_blank" rel="noreferrer">Host institution</a>
+                <a href="https://www.riec.tohoku.ac.jp/en/" target="_blank" rel="noreferrer">RIEC</a>
+              </p>
+            </div>
+          </article>
+
+          <article class="archive-item" data-tags="paper" data-date="2024-07-19">
+            <div class="archive-date">July 19, 2024</div>
+            <div class="archive-body">
+              <h3><a class="archive-title-link" href="./202407_spinel_color_center_paper/index.html">CTQA-Linked Paper on Spinel Color Centers</a></h3>
+              <p class="archive-meta">Applied Physics Express (2024)</p>
+              <p class="body-copy">This CTQA-linked paper on spinel color centers was published in Applied Physics Express on July 19, 2024.</p>
+              <p class="archive-citation">Citation: Kawahara, M., Abe, Y., Takano, K., Heremans, F. J., Ishihara, J., Sullivan, S. E., Vorwerk, C., Somjit, V., Anderson, C. P., Wolfowicz, G., Kohda, M., Fukami, S., Galli, G., Awschalom, D. D., Ohno, H., and Kanai, S. Polarization-dependent photoluminescence of Ce-implanted MgO and MgAl2O4. Appl. Phys. Express 17, 072004 (2024). https://doi.org/10.35848/1882-0786/ad59f4</p>
               <p class="archive-links">
                 <a href="https://doi.org/10.35848/1882-0786/ad59f4" target="_blank" rel="noreferrer">DOI</a>
                 <a href="https://www.tohoku.ac.jp/en/press/exploring_a_new_qubit_with_the_gemstone_spinel.html" target="_blank" rel="noreferrer">Tohoku research news</a>
@@ -154,39 +261,27 @@
             </div>
           </article>
 
-          <article class="archive-item" data-tags="seminar sendai">
-            <div class="archive-date">October 28, 2024</div>
+          <article class="archive-item" data-tags="outreach" data-date="2024-07-30">
+            <div class="archive-date">July 30&ndash;31, 2024</div>
             <div class="archive-body">
-              <h3><a class="archive-title-link" href="./202410_3rd_seminar/index.html">3rd Seminar of the Chicago-Tohoku Quantum Alliance</a></h3>
+              <h3><a class="archive-title-link" href="./202407_open_campus_exhibit/index.html">Tohoku University Open Campus 2024 Exhibit</a></h3>
               <p class="archive-meta">Tohoku University, Sendai</p>
-              <p class="body-copy">The third CTQA seminar was held at Tohoku University in Sendai.</p>
-              <p class="archive-links">
-                <a href="https://www.tohoku.ac.jp/en/" target="_blank" rel="noreferrer">Host institution</a>
-                <a href="https://www.riec.tohoku.ac.jp/en/" target="_blank" rel="noreferrer">RIEC</a>
-              </p>
-            </div>
-          </article>
-
-          <article class="archive-item" data-tags="outreach sendai">
-            <div class="archive-date">July 30-31, 2024</div>
-            <div class="archive-body">
-              <h3><a class="archive-title-link" href="./202407_open_campus_exhibit/index.html">Tohoku Open House / Open Campus Booth</a></h3>
-              <p class="archive-meta">Tohoku University, Sendai</p>
-              <p class="body-copy">CTQA activities were presented during Tohoku University open campus programming as part of Alliance Week 2024.</p>
+              <p class="body-copy">CTQA activities were presented during Tohoku University Open Campus 2024 as part of Alliance Week 2024, with hands-on quantum games developed together with the University of Chicago.</p>
               <p class="archive-links">
                 <a href="https://www.tohoku.ac.jp/en/news/university_news/quantum_games_at_open_campus_2024.html" target="_blank" rel="noreferrer">News report</a>
                 <a href="https://www.tohoku.ac.jp/en/events/special_event/chicago_tohoku_quantum_alliance_week_2024.html" target="_blank" rel="noreferrer">Alliance Week page</a>
+                <a href="https://pme.uchicago.edu/news/teaching-quantum-concepts-through-play" target="_blank" rel="noreferrer">UChicago PME news</a>
                 <a href="https://web.tohoku.ac.jp/eng_mirai/oc/ctq/index.html" target="_blank" rel="noreferrer">Open campus page</a>
               </p>
             </div>
           </article>
 
-          <article class="archive-item" data-tags="workshop startup tokyo">
-            <div class="archive-date">July 29-30, 2024</div>
+          <article class="archive-item" data-tags="event workshop startup" data-date="2024-07-29">
+            <div class="archive-date">July 29&ndash;30, 2024</div>
             <div class="archive-body">
               <h3><a class="archive-title-link" href="./202407_quantum_startups_workshop/index.html">Workshop for Quantum Startups Creation in Japan</a></h3>
               <p class="archive-meta">Tokyo</p>
-              <p class="body-copy">Part of Chicago-Tohoku Quantum Alliance Week 2024, this workshop focused on startup creation and quantum innovation in Japan.</p>
+              <p class="body-copy">Part of Chicago-Tohoku Quantum Alliance Week 2024, this Tokyo workshop focused on startup creation, mentoring, and cross-Pacific quantum innovation.</p>
               <p class="archive-links">
                 <a href="https://www.tohoku.ac.jp/en/events/special_event/chicago_tohoku_quantum_alliance_week_2024.html" target="_blank" rel="noreferrer">Alliance Week page</a>
                 <a href="https://startup.tohoku.ac.jp/workshop-20240729-30/" target="_blank" rel="noreferrer">Workshop report</a>
@@ -194,37 +289,55 @@
             </div>
           </article>
 
-          <article class="archive-item" data-tags="interaction tokyo">
+          <article class="archive-item" data-tags="event interaction" data-date="2024-07-29">
             <div class="archive-date">July 29, 2024</div>
             <div class="archive-body">
               <h3><a class="archive-title-link" href="./202407_quantum_interaction/index.html">Quantum Interaction</a></h3>
               <p class="archive-meta">Tokyo</p>
-              <p class="body-copy">A CTQA-related interaction event was held in Tokyo immediately before the startup workshop.</p>
+              <p class="body-copy">An interaction session moderated by Yoichiro Tanaka was held in Tokyo immediately before the startup workshop.</p>
               <p class="archive-links">
                 <a href="https://startup.tohoku.ac.jp/workshop-20240729-30/" target="_blank" rel="noreferrer">Related event report</a>
               </p>
             </div>
           </article>
 
-          <article class="archive-item" data-tags="seminar chicago">
+          <article class="archive-item" data-tags="event seminar" data-date="2024-02-27">
             <div class="archive-date">February 27, 2024</div>
             <div class="archive-body">
               <h3><a class="archive-title-link" href="./202402_2nd_seminar/index.html">2nd Seminar of the Chicago-Tohoku Quantum Alliance</a></h3>
               <p class="archive-meta">University of Chicago</p>
-              <p class="body-copy">The second CTQA seminar was held at the University of Chicago.</p>
+              <p class="body-copy">The second CTQA seminar featured Prof. Takafumi Sato at the University of Chicago and appears to have been hosted as part of the PME Distinguished Quantum Colloquium Series.</p>
               <p class="archive-links">
-                <a href="https://www.uchicago.edu/" target="_blank" rel="noreferrer">Host institution</a>
+                <a href="https://pme.uchicago.edu/event/pme-distinguished-quantum-colloquium-series-takafumi-sato-tohoku" target="_blank" rel="noreferrer">PME colloquium page</a>
                 <a href="https://quantum.uchicago.edu/" target="_blank" rel="noreferrer">Chicago Quantum Institute</a>
               </p>
             </div>
           </article>
 
-          <article class="archive-item" data-tags="symposium tokyo">
+          <article class="archive-item" data-tags="visit" data-date="2024-05-14">
+            <div class="archive-date">May 14, 2024</div>
+            <div class="archive-body">
+              <h3><a class="archive-title-link" href="./202405_kanai_chicago_visit/index.html">Prof. Shun Kanai Visit to the University of Chicago</a></h3>
+              <p class="archive-meta">Visit</p>
+              <p class="body-copy">Prof. Shun Kanai visited the University of Chicago during a CTQA visit.</p>
+            </div>
+          </article>
+
+          <article class="archive-item" data-tags="visit" data-date="2024-02-27">
+            <div class="archive-date">February 27&ndash;28, 2024</div>
+            <div class="archive-body">
+              <h3><a class="archive-title-link" href="./202402_sato_chicago_visit/index.html">Prof. Takafumi Sato Visit to the University of Chicago</a></h3>
+              <p class="archive-meta">Visit</p>
+              <p class="body-copy">Prof. Takafumi Sato visited the University of Chicago during a CTQA visit.</p>
+            </div>
+          </article>
+
+          <article class="archive-item" data-tags="event symposium" data-date="2024-02-14">
             <div class="archive-date">February 14, 2024</div>
             <div class="archive-body">
               <h3><a class="archive-title-link" href="./202402_ctqa_symposium/index.html">Chicago-Tohoku Quantum Alliance Symposium</a></h3>
               <p class="archive-meta">Tokyo</p>
-              <p class="body-copy">A public symposium focused on quantum technology innovation and startup creation, hosted as a major CTQA milestone event.</p>
+              <p class="body-copy">A public symposium at BASE Q in Tokyo focused on quantum technology innovation, startup creation, and international collaboration between Tohoku University and the University of Chicago.</p>
               <p class="archive-links">
                 <a href="https://www.tohoku.ac.jp/en/events/special_event/towards_quantum_technology_innovation_and_startup_creation.html" target="_blank" rel="noreferrer">Official event page</a>
                 <a href="https://www.tohoku.ac.jp/japanese/2024/01/event20240125-03-ct.html" target="_blank" rel="noreferrer">Japanese announcement</a>
@@ -233,21 +346,38 @@
             </div>
           </article>
 
-          <article class="archive-item" data-tags="seminar sendai">
+          <article class="archive-item" data-tags="visit" data-date="2023-11-20">
+            <div class="archive-date">November 20, 2023</div>
+            <div class="archive-body">
+              <h3><a class="archive-title-link" href="./202311_ctqa_visitors_tohoku_visit/index.html">Prof. F. Joseph Heremans, Dr. Katherine J. Harmon, Dr. Nazar Delegan, and Dr. Weiss Visit to Tohoku University</a></h3>
+              <p class="archive-meta">Visit</p>
+              <p class="body-copy">Prof. F. Joseph Heremans, Dr. Katherine J. Harmon, Dr. Nazar Delegan, and Dr. Weiss visited Tohoku University during a CTQA visit.</p>
+            </div>
+          </article>
+
+          <article class="archive-item" data-tags="event seminar" data-date="2023-11-20">
             <div class="archive-date">November 20, 2023</div>
             <div class="archive-body">
               <h3><a class="archive-title-link" href="./202311_1st_seminar/index.html">1st Seminar of the Chicago-Tohoku Quantum Alliance</a></h3>
               <p class="archive-meta">Tohoku University, Sendai</p>
               <p class="body-copy">The first CTQA seminar was held at Tohoku University in Sendai.</p>
               <p class="archive-links">
-                <a href="https://www.r-info.tohoku.ac.jp/en/e3b43a53206e0c9acbb307e0ad424c6e.html" target="_blank" rel="noreferrer">Researcher profile reference</a>
                 <a href="https://www.nanospin.riec.tohoku.ac.jp/annual_report/NS2024.pdf" target="_blank" rel="noreferrer">Annual report PDF</a>
               </p>
             </div>
           </article>
 
-          <article class="archive-item" data-tags="workshop sendai">
-            <div class="archive-date">October 5-6, 2023</div>
+          <article class="archive-item" data-tags="visit" data-date="2023-10-25">
+            <div class="archive-date">October 25, 2023</div>
+            <div class="archive-body">
+              <h3><a class="archive-title-link" href="./202310_kanai_chicago_visit/index.html">Prof. Shun Kanai Visit to the University of Chicago</a></h3>
+              <p class="archive-meta">Visit</p>
+              <p class="body-copy">Prof. Shun Kanai visited the University of Chicago during a CTQA visit.</p>
+            </div>
+          </article>
+
+          <article class="archive-item" data-tags="event workshop" data-date="2023-10-05">
+            <div class="archive-date">October 5&ndash;6, 2023</div>
             <div class="archive-body">
               <h3><a class="archive-title-link" href="./202310_1st_workshop/index.html">1st Workshop on the Chicago-Tohoku Quantum Alliance</a></h3>
               <p class="archive-meta">Tohoku University, Sendai</p>
@@ -260,7 +390,7 @@
             </div>
           </article>
 
-          <article class="archive-item" data-tags="launch">
+          <article class="archive-item" data-tags="event launch" data-date="2023-06-06">
             <div class="archive-date">June 6, 2023</div>
             <div class="archive-body">
               <h3><a class="archive-title-link" href="./202306_alliance_launch/index.html">Chicago-Tohoku Quantum Alliance Launch</a></h3>
@@ -272,6 +402,7 @@
               </p>
             </div>
           </article>
+
         </div>
       </div>
     </section>
