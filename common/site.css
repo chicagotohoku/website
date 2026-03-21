@@ -11,8 +11,9 @@
   --accent: #800020;
   --accent-strong: #5f0019;
   --accent-soft: rgba(128, 17, 50, 0.08);
-  --secondary: #4a2a84;
-  --secondary-soft: rgba(74, 42, 132, 0.08);
+  --secondary: #3e1485;
+  --secondary-soft: rgba(62, 20, 133, 0.08);
+  --brand-gradient: linear-gradient(90deg, #7b1732 0%, #972646 32%, #6d3090 68%, #3e1485 100%);
   --shadow: 0 18px 38px rgba(31, 36, 48, 0.06);
 }
 
@@ -56,7 +57,7 @@ a {
   position: relative;
   padding: 42px 42px 34px;
   border-top: 5px solid transparent;
-  border-image: linear-gradient(90deg, var(--accent) 0%, var(--secondary) 100%) 1;
+  border-image: var(--brand-gradient) 1;
   background: transparent;
   box-shadow: none;
   text-align: center;
@@ -67,10 +68,13 @@ a {
   display: inline-block;
   margin: 0 0 14px;
   padding: 0;
-  background: linear-gradient(90deg, var(--accent) 0%, var(--secondary) 100%);
+  background: var(--brand-gradient);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  -webkit-text-fill-color: transparent;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -216,10 +220,13 @@ li {
 
 .hero-subtitle {
   margin-top: 10px;
-  background: linear-gradient(90deg, var(--accent) 0%, var(--secondary) 100%);
+  background: var(--brand-gradient);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  -webkit-text-fill-color: transparent;
   font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.1em;
@@ -464,14 +471,17 @@ li {
   top: 0;
   bottom: 0;
   width: 8px;
-  background: var(--tag-stripe, var(--accent));
+  background: var(--tag-stripe, var(--brand-gradient));
 }
 
 .archive-date {
-  background: linear-gradient(90deg, var(--accent) 0%, var(--secondary) 100%);
+  background: var(--brand-gradient);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  -webkit-text-fill-color: transparent;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -722,16 +732,26 @@ code {
   }
 
   .brand-lockup {
-    grid-template-columns: 1fr;
-    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 8px;
   }
 
   .brand-divider {
-    display: none;
+    display: flex;
+    font-size: 22px;
+  }
+
+  .brand-mark {
+    height: 112px;
+    padding: 14px 14px;
+  }
+
+  .brand-logo-image {
+    height: 76px;
   }
 
   .brand-logo-frame {
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   .brand-wordmark {
@@ -755,6 +775,24 @@ code {
   .panel,
   .event-card {
     padding: 20px;
+  }
+
+  .brand-lockup {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .brand-mark {
+    height: 92px;
+    padding: 10px 10px;
+  }
+
+  .brand-logo-image {
+    height: 58px;
+  }
+
+  .brand-divider {
+    font-size: 18px;
   }
 
   h1 {
@@ -856,10 +894,13 @@ body.theme-dark::before {
 
 .theme-dark .section-kicker,
 .theme-dark .eyebrow {
-  background: linear-gradient(90deg, #d86a86 0%, #a993ff 100%);
+  background: linear-gradient(90deg, #d86a86 0%, #e08aa9 34%, #b78ff7 70%, #8e73e6 100%);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 .theme-dark .note {

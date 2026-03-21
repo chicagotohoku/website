@@ -35,23 +35,19 @@ function decorateItems() {
       .split(/\s+/)
       .map((tag) => tag.trim().toLowerCase())
       .filter(Boolean);
-    const styles = tags.map(getTagStyle);
-    const stripeColors = styles.map((style) => style.color);
+    const stripeColors = tags.map((tag) => getTagStyle(tag).color);
 
     if (!stripeColors.length) {
-      stripeColors.push(tagPalette.all.color);
+      item.style.setProperty("--tag-stripe", tagPalette.all.color);
+      return;
     }
 
-    const stop = 100 / stripeColors.length;
-    const gradient = stripeColors
-      .map((color, index) => {
-        const start = (index * stop).toFixed(2);
-        const end = ((index + 1) * stop).toFixed(2);
-        return `${color} ${start}% ${end}%`;
-      })
-      .join(", ");
+    if (stripeColors.length === 1) {
+      item.style.setProperty("--tag-stripe", stripeColors[0]);
+      return;
+    }
 
-    item.style.setProperty("--tag-stripe", `linear-gradient(to bottom, ${gradient})`);
+    item.style.setProperty("--tag-stripe", `linear-gradient(to bottom, ${stripeColors.join(", ")})`);
   });
 }
 
