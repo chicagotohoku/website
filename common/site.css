@@ -213,6 +213,18 @@ li {
   line-height: 1.75;
 }
 
+.hero .lead {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.lead-centered {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
 .body-copy {
   margin-top: 10px;
   color: var(--muted);
@@ -885,6 +897,7 @@ body.theme-dark::before {
 
 .theme-dark .hero-subtitle {
   color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
   background: none;
   -webkit-background-clip: border-box;
   background-clip: border-box;
