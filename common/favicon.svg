@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="CTQA favicon">
+  <rect width="64" height="64" rx="14" fill="#f7f5f2"/>
+  <path
+    d="M30 18 A14 14 0 1 0 30 46"
+    fill="none"
+    stroke="#7b1e3a"
+    stroke-linecap="round"
+    stroke-width="8"/>
+  <path
+    d="M36 18H56M46 18V48"
+    fill="none"
+    stroke="#4b2e83"
+    stroke-linecap="round"
+    stroke-width="8"/>
+</svg>
