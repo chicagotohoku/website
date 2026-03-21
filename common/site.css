@@ -802,7 +802,7 @@ body.theme-dark::before {
   inset: 0;
   background:
     linear-gradient(rgba(8, 10, 18, 0.42), rgba(8, 10, 18, 0.52)),
-    url("../202606_3rd_ws/image2.png") center top / min(1024px, 100vw) auto no-repeat,
+    url("../202606_3rd_workshop/image2.png") center top / min(1024px, 100vw) auto no-repeat,
     #151821;
   pointer-events: none;
   z-index: 0;

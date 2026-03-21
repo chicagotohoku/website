@@ -10,15 +10,16 @@ ctqa/
 |-- 202310_1st_workshop/
 |-- 202311_1st_seminar/
 |-- 202402_2nd_seminar/
-|-- 202402_symposium/
+|-- 202402_ctqa_symposium/
 |-- 202407_open_campus_exhibit/
 |-- 202407_quantum_interaction/
 |-- 202407_quantum_startups_workshop/
 |-- 202410_3rd_seminar/
+|-- 202501_first_ctqa_paper/
 |-- 202505_2nd_workshop/
-|-- 202510_riec_open_house/
-|-- 202511_carin_seminar/
-|-- 202606_3rd_ws/
+|-- 202510_riec_open_house_exhibit/
+|-- 202511_4th_seminar/
+|-- 202606_3rd_workshop/
 |-- common/
 `-- index.html
 ```
@@ -28,4 +29,4 @@ ctqa/
 - `index.html` is the hub page for future and past CTQA activities.
 - Each event folder contains its own local `index.html`.
 - Shared styling and scripts live under `common/`.
-- Event folders can be renamed later if official titles change.
+- Event folders follow the pattern `YYYYMM_event-name` using lowercase snake case.
