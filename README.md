@@ -18,6 +18,7 @@ ctqa/
 |-- 202501_first_ctqa_paper/
 |-- 202505_2nd_workshop/
 |-- 202510_riec_open_house_exhibit/
+|-- 202511_toriyama_paper/
 |-- 202511_4th_seminar/
 |-- 202606_3rd_workshop/
 |-- common/
