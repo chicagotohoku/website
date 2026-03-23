@@ -348,6 +348,14 @@ li {
   color: #fffaf5;
 }
 
+.filter-chip.is-empty {
+  opacity: 0.5;
+}
+
+.filter-chip.is-empty.is-active {
+  opacity: 1;
+}
+
 .section-heading {
   display: flex;
   align-items: end;

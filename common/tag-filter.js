@@ -30,6 +30,9 @@ function getTagStyle(tag) {
 function decorateFilters() {
   filterButtons.forEach((button) => {
     const tag = (button.dataset.filter || "all").toLowerCase();
+    if (!button.dataset.label) {
+      button.dataset.label = button.textContent.trim();
+    }
     const style = getTagStyle(tag);
     button.style.setProperty("--chip-color", style.color);
     button.style.setProperty("--chip-soft", style.soft);
@@ -66,6 +69,19 @@ function buildYearButtons() {
   yearButtons = Array.from(document.querySelectorAll("[data-year]"));
 }
 
+function countItemsForYear(year) {
+  return filterItems.filter((item) => {
+    const tags = (item.dataset.tags || "")
+      .split(/\s+/)
+      .map((tag) => tag.trim().toLowerCase())
+      .filter(Boolean);
+    const itemYear = getItemYear(item);
+    const matchesFilter = currentFilter === "all" || tags.includes(currentFilter);
+    const matchesYear = year === "all" || itemYear === year;
+    return matchesFilter && matchesYear;
+  }).length;
+}
+
 function decorateItems() {
   filterItems.forEach((item) => {
     const tags = (item.dataset.tags || "")
@@ -85,6 +101,42 @@ function decorateItems() {
     }
 
     item.style.setProperty("--tag-stripe", `linear-gradient(to bottom, ${stripeColors.join(", ")})`);
+  });
+}
+
+function countItemsForFilter(filter) {
+  return filterItems.filter((item) => {
+    const tags = (item.dataset.tags || "")
+      .split(/\s+/)
+      .map((tag) => tag.trim().toLowerCase())
+      .filter(Boolean);
+    const itemYear = getItemYear(item);
+    const matchesYear = currentYear === "all" || itemYear === currentYear;
+    const matchesFilter = filter === "all" || tags.includes(filter);
+    return matchesYear && matchesFilter;
+  }).length;
+}
+
+function updateFilterCounts() {
+  filterButtons.forEach((button) => {
+    const filter = (button.dataset.filter || "all").toLowerCase();
+    const label = button.dataset.label || button.textContent.trim();
+    const count = countItemsForFilter(filter);
+    button.textContent = `${label} (${count})`;
+    button.classList.toggle("is-empty", count === 0);
+    button.setAttribute("aria-disabled", count === 0 ? "true" : "false");
+  });
+
+  yearButtons.forEach((button) => {
+    const year = button.dataset.year || "all";
+    if (!button.dataset.label) {
+      button.dataset.label = button.textContent.trim();
+    }
+    const label = button.dataset.label;
+    const count = countItemsForYear(year);
+    button.textContent = `${label} (${count})`;
+    button.classList.toggle("is-empty", count === 0);
+    button.setAttribute("aria-disabled", count === 0 ? "true" : "false");
   });
 }
 
@@ -117,6 +169,8 @@ function applyVisibility() {
     const visibleItems = section.querySelectorAll("[data-tags]:not(.is-hidden)");
     section.classList.toggle("is-hidden", visibleItems.length === 0);
   });
+
+  updateFilterCounts();
 }
 
 function applySort(direction) {
