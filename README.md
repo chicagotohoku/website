@@ -24,6 +24,7 @@ ctqa/
 |-- 202410_kanai_chicago_quantum_summit_visit/
 |-- 202505_2nd_workshop/
 |-- 202507_open_campus_exhibit/
+|-- 202508_quantum_ideathon/
 |-- 202510_riec_open_house_exhibit/
 |-- 202511_4th_seminar/
 |-- 202511_toriyama_paper/
