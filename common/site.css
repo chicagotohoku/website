@@ -697,6 +697,32 @@ li {
   color: var(--muted);
 }
 
+.speaker-list-two-column {
+  columns: 3;
+  column-gap: 36px;
+}
+
+.speaker-list-two-column li {
+  break-inside: avoid;
+}
+
+.speaker-affiliation-chicago {
+  color: var(--accent);
+}
+
+.speaker-affiliation-tohoku {
+  color: var(--secondary);
+}
+
+.speaker-affiliation-both {
+  display: inline;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent) 44%, var(--secondary) 56%, var(--secondary) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
 .access-lines p {
   margin: 0;
 }
@@ -955,6 +981,10 @@ code {
     grid-template-columns: 1fr;
   }
 
+  .speaker-list-two-column {
+    columns: 1;
+  }
+
 }
 
 body.theme-dark {
@@ -1053,6 +1083,23 @@ body.theme-dark-first-workshop::before {
 
 .theme-dark .program-day h3 {
   color: rgba(255, 245, 236, 0.92);
+}
+
+.theme-dark .speaker-affiliation-chicago {
+  color: #e88f9d;
+}
+
+.theme-dark .speaker-affiliation-tohoku {
+  color: #b9a3ff;
+}
+
+.theme-dark .speaker-affiliation-both {
+  display: inline;
+  background: linear-gradient(90deg, #e88f9d 0%, #e88f9d 44%, #b9a3ff 56%, #b9a3ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 .theme-dark .program-table th,
