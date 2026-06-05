@@ -644,6 +644,12 @@ li {
   text-decoration: underline;
 }
 
+.archive-links-stacked {
+  display: grid;
+  gap: 8px;
+  padding-left: 18px;
+}
+
 .program-day + .program-day {
   margin-top: 28px;
 }
