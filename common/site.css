@@ -280,6 +280,26 @@ li {
   color: var(--accent-strong);
 }
 
+.registration-cta {
+  align-items: center;
+  gap: 12px 16px;
+}
+
+.registration-button {
+  border-color: #f4c430;
+  background: #f4c430;
+  color: #211700;
+  min-height: 52px;
+  padding: 0 26px;
+  box-shadow: 0 16px 30px rgba(244, 196, 48, 0.28);
+}
+
+.registration-deadline {
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
 .section-split {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -642,6 +662,14 @@ li {
   border: 1px solid rgba(31, 36, 48, 0.18);
 }
 
+.program-time-col {
+  width: 140px;
+}
+
+.program-talk-time-col {
+  width: 92px;
+}
+
 .program-table th,
 .program-table td {
   padding: 12px 14px;
@@ -650,7 +678,6 @@ li {
 }
 
 .program-table th {
-  width: 140px;
   text-align: left;
   font-weight: 700;
   white-space: nowrap;
@@ -662,6 +689,30 @@ li {
 
 .program-table td.program-detail {
   font-weight: 400;
+}
+
+.program-detail-time {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.program-detail-spacer {
+  padding: 0;
+}
+
+.program-session-title,
+.program-chair,
+.program-speaker-note {
+  display: block;
+}
+
+.program-chair,
+.program-speaker-note {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.94rem;
+  font-weight: 500;
+  line-height: 1.55;
 }
 
 .program-table tr:nth-child(odd) th,
@@ -985,6 +1036,23 @@ code {
     columns: 1;
   }
 
+  .program-time-col {
+    width: 92px;
+  }
+
+  .program-talk-time-col {
+    width: 64px;
+  }
+
+  .program-table {
+    font-size: 0.9rem;
+  }
+
+  .program-table th,
+  .program-table td {
+    padding: 10px 8px;
+  }
+
 }
 
 body.theme-dark {
@@ -1047,7 +1115,15 @@ body.theme-dark-first-workshop::before {
 .theme-dark .source-list,
 .theme-dark .related-link-domain,
 .theme-dark .site-footer-note {
-  color: rgba(243, 241, 236, 0.8);
+  color: rgba(255, 252, 246, 0.9);
+}
+
+.theme-dark .registration-deadline,
+.theme-dark .program-chair,
+.theme-dark .program-detail-time,
+.theme-dark .program-speaker-note,
+.theme-dark .access-lines {
+  color: rgba(255, 252, 246, 0.86);
 }
 
 .theme-dark .hero-subtitle {
