@@ -320,6 +320,30 @@ li {
   font-weight: 700;
 }
 
+.hero-poster {
+  margin: 14px 0 0;
+  text-align: center;
+}
+
+.hero-poster a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 250, 240, 0.6);
+  background: rgba(13, 18, 32, 0.42);
+  color: #fffaf0;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.hero-poster a:hover,
+.hero-poster a:focus-visible {
+  border-color: #fffaf0;
+  background: rgba(255, 250, 240, 0.12);
+}
+
 .section-split {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
