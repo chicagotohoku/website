@@ -245,6 +245,26 @@ li {
   text-transform: uppercase;
 }
 
+.hero-venue {
+  margin: 8px auto 0;
+  max-width: 920px;
+  color: var(--muted);
+  font-size: clamp(1rem, 0.58vw + 0.86rem, 1.45rem);
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.hero-venue a {
+  color: #fffaf0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.hero-venue span {
+  display: block;
+}
+
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
@@ -754,32 +774,6 @@ li {
   color: var(--muted);
 }
 
-.speaker-list-two-column {
-  columns: 3;
-  column-gap: 36px;
-}
-
-.speaker-list-two-column li {
-  break-inside: avoid;
-}
-
-.speaker-affiliation-chicago {
-  color: var(--accent);
-}
-
-.speaker-affiliation-tohoku {
-  color: var(--secondary);
-}
-
-.speaker-affiliation-both {
-  display: inline;
-  background: linear-gradient(90deg, var(--accent) 0%, var(--accent) 44%, var(--secondary) 56%, var(--secondary) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-}
-
 .access-lines p {
   margin: 0;
 }
@@ -1101,10 +1095,6 @@ code {
     grid-template-columns: 1fr;
   }
 
-  .speaker-list-two-column {
-    columns: 1;
-  }
-
   .coorganizer-grid {
     grid-template-columns: 1fr;
   }
@@ -1210,6 +1200,10 @@ body.theme-dark-first-workshop::before {
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
 }
 
+.theme-dark .hero-venue {
+  color: #fffaf0;
+}
+
 .theme-dark .section-kicker,
 .theme-dark .eyebrow {
   background: linear-gradient(90deg, #d86a86 0%, #e08aa9 34%, #b78ff7 70%, #8e73e6 100%);
@@ -1232,23 +1226,6 @@ body.theme-dark-first-workshop::before {
 
 .theme-dark .program-day h3 {
   color: rgba(255, 245, 236, 0.92);
-}
-
-.theme-dark .speaker-affiliation-chicago {
-  color: #e88f9d;
-}
-
-.theme-dark .speaker-affiliation-tohoku {
-  color: #b9a3ff;
-}
-
-.theme-dark .speaker-affiliation-both {
-  display: inline;
-  background: linear-gradient(90deg, #e88f9d 0%, #e88f9d 44%, #b9a3ff 56%, #b9a3ff 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
 }
 
 .theme-dark .program-table th,
