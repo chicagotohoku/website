@@ -368,7 +368,7 @@
     </div>
     <div class="control-row">
       <label for="trailThinnessControl">Trail thinness</label>
-      <input id="trailThinnessControl" data-control="trailThinness" type="range" min="0" max="100" step="1" value="100">
+      <input id="trailThinnessControl" data-control="trailThinness" type="range" min="0" max="100" step="1" value="56">
       <output for="trailThinnessControl">50</output>
     </div>
     <div class="control-row">
@@ -388,7 +388,7 @@
     </div>
     <div class="control-row">
       <label for="timeScaleControl">Time speed</label>
-      <input id="timeScaleControl" data-control="timeScale" type="range" min="0" max="100" step="1" value="81">
+      <input id="timeScaleControl" data-control="timeScale" type="range" min="0" max="100" step="1" value="31">
       <output for="timeScaleControl">50</output>
     </div>
   </section>
@@ -525,11 +525,11 @@
         trailSpeedBrightness: 50,
         trailAgeBrightness: 100,
         starAgeBrightness: 100,
-        trailThinness: 100,
+        trailThinness: 56,
         trailLifetime: 100,
         bhGravity: 50,
         bhDistance: 50,
-        timeScale: 81
+        timeScale: 31
       };
       const RESET_CONTROL_VALUES = {
         particleSize: 50,
@@ -727,11 +727,12 @@
         let candidate = null;
         let bestNearEscape = null;
         const tries = CONFIG.transfer.boundOnly ? CONFIG.transfer.boundMaxTries : 1;
+        const bounds = simulationBounds();
         for (let i = 0; i < tries; i += 1) {
           const speed = scaled(CONFIG.transfer.initialSpeed);
           const angle = random() * Math.PI * 2;
-          const x = random() * viewport.width;
-          const y = random() * viewport.height;
+          const x = lerp(bounds.left, bounds.right, random());
+          const y = lerp(bounds.top, bounds.bottom, random());
           const vx = Math.cos(angle) * speed;
           const vy = Math.sin(angle) * speed;
           const energy = specificOrbitalEnergy(x, y, vx, vy);
@@ -763,6 +764,18 @@
         p.targetSource = random() < 0.5 ? "left" : "right";
         p.phase = random() * Math.PI * 2;
         p.size = scaled(0.28 + Math.pow(random(), 1.35) * 0.82);
+      }
+
+      function simulationBounds() {
+        const side = Math.max(viewport.width, viewport.height);
+        const cx = viewport.width * 0.5;
+        const cy = viewport.height * 0.5;
+        return {
+          left: cx - side * 0.5,
+          right: cx + side * 0.5,
+          top: cy - side * 0.5,
+          bottom: cy + side * 0.5
+        };
       }
 
       function cloneSurvivingOrbit(p) {
@@ -963,6 +976,7 @@
 
       function updateMainLinkParticles(dt, time) {
         const margin = scaled(12);
+        const bounds = simulationBounds();
 
         sources.left.pulse *= Math.pow(0.06, dt);
         sources.right.pulse *= Math.pow(0.06, dt);
@@ -975,7 +989,7 @@
 
           advanceParticleRK4(p, dt);
 
-          if (p.x < -margin || p.x > viewport.width + margin || p.y < -margin || p.y > viewport.height + margin) {
+          if (p.x < bounds.left - margin || p.x > bounds.right + margin || p.y < bounds.top - margin || p.y > bounds.bottom + margin) {
             cloneSurvivingOrbit(p);
           }
         }
