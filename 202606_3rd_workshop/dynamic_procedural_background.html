@@ -1,0 +1,1863 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3rd CTQA Procedural Quantum Background</title>
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #050710;
+    }
+
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      background: #050710;
+    }
+
+    .fullscreen-toggle {
+      width: auto;
+      height: 34px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 8px;
+      background: rgba(4, 7, 18, 0.42);
+      color: rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      transition: background 160ms ease, border-color 160ms ease, opacity 160ms ease;
+    }
+
+    .overlay-toggle {
+      height: 34px;
+      padding: 0 12px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 8px;
+      background: rgba(4, 7, 18, 0.42);
+      color: rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+      font: 700 12px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      white-space: nowrap;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      transition: background 160ms ease, border-color 160ms ease, opacity 160ms ease;
+    }
+
+    .panel-actions {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .panel-actions .overlay-toggle {
+      width: 100%;
+    }
+
+    .panel-actions .fullscreen-toggle,
+    .panel-actions .controls-toggle,
+    .panel-actions .preset-toggle,
+    .panel-actions .reset-toggle {
+      width: 100%;
+    }
+
+    .workshop-control-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(255, 210, 79, 0.46);
+      border-radius: 8px;
+      background: rgba(255, 210, 79, 0.12);
+      color: rgba(255, 230, 160, 0.96);
+      font: 800 12px/1.1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      text-decoration: none;
+      text-align: center;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+    }
+
+    .controls-toggle {
+      height: 34px;
+      padding: 0 12px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 8px;
+      background: rgba(4, 7, 18, 0.42);
+      color: rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+      font: 700 12px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      white-space: nowrap;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      transition: background 160ms ease, border-color 160ms ease, opacity 160ms ease;
+    }
+
+    .preset-toggle,
+    .reset-toggle {
+      height: 34px;
+      padding: 0 12px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 8px;
+      background: rgba(4, 7, 18, 0.42);
+      color: rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+      font: 700 12px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      white-space: nowrap;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      transition: background 160ms ease, border-color 160ms ease, opacity 160ms ease;
+    }
+
+    .controls-restore {
+      position: fixed;
+      left: 18px;
+      top: 18px;
+      z-index: 11;
+      height: 34px;
+      padding: 0 12px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 8px;
+      background: rgba(4, 7, 18, 0.58);
+      color: rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+      font: 700 12px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      white-space: nowrap;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 55px rgba(0, 0, 0, 0.34);
+      transition: background 160ms ease, border-color 160ms ease, opacity 160ms ease;
+    }
+
+    body.controls-hidden .control-panel {
+      display: none;
+    }
+
+    body:not(.controls-hidden) .controls-restore {
+      display: none;
+    }
+
+    .fullscreen-toggle:hover,
+    .overlay-toggle:hover,
+    .controls-toggle:hover,
+    .preset-toggle:hover,
+    .reset-toggle:hover,
+    .workshop-control-link:hover,
+    .workshop-link-panel:hover,
+    .controls-restore:hover {
+      background: rgba(18, 24, 44, 0.72);
+      border-color: rgba(255, 255, 255, 0.48);
+    }
+
+    .fullscreen-toggle:focus-visible,
+    .overlay-toggle:focus-visible,
+    .controls-toggle:focus-visible,
+    .preset-toggle:focus-visible,
+    .reset-toggle:focus-visible,
+    .workshop-control-link:focus-visible,
+    .workshop-link-panel:focus-visible,
+    .controls-restore:focus-visible {
+      outline: 2px solid rgba(255, 210, 80, 0.95);
+      outline-offset: 3px;
+    }
+
+    .title-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 6;
+      width: 100vw;
+      height: 100vh;
+      object-fit: contain;
+      pointer-events: none;
+      transition: opacity 180ms ease, visibility 180ms ease;
+    }
+
+    .title-scrim {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      background: rgba(0, 0, 0, 0.302);
+      pointer-events: none;
+      transition: opacity 180ms ease, visibility 180ms ease;
+    }
+
+    body.overlay-hidden .title-overlay,
+    body.overlay-hidden .title-scrim {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .fullscreen-icon {
+      position: relative;
+      display: block;
+      width: 18px;
+      height: 18px;
+    }
+
+    .fullscreen-icon::before,
+    .fullscreen-icon::after,
+    .fullscreen-toggle span::before,
+    .fullscreen-toggle span::after {
+      content: "";
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      border-color: currentColor;
+      border-style: solid;
+    }
+
+    .fullscreen-icon::before {
+      left: 0;
+      top: 0;
+      border-width: 2px 0 0 2px;
+    }
+
+    .fullscreen-icon::after {
+      right: 0;
+      top: 0;
+      border-width: 2px 2px 0 0;
+    }
+
+    .fullscreen-toggle span::before {
+      left: 0;
+      bottom: 0;
+      border-width: 0 0 2px 2px;
+    }
+
+    .fullscreen-toggle span::after {
+      right: 0;
+      bottom: 0;
+      border-width: 0 2px 2px 0;
+    }
+
+    .fullscreen-toggle.is-fullscreen .fullscreen-icon::before {
+      left: 2px;
+      top: 2px;
+      border-width: 0 2px 2px 0;
+    }
+
+    .fullscreen-toggle.is-fullscreen .fullscreen-icon::after {
+      right: 2px;
+      top: 2px;
+      border-width: 0 0 2px 2px;
+    }
+
+    .fullscreen-toggle.is-fullscreen span::before {
+      left: 2px;
+      bottom: 2px;
+      border-width: 2px 2px 0 0;
+    }
+
+    .fullscreen-toggle.is-fullscreen span::after {
+      right: 2px;
+      bottom: 2px;
+      border-width: 2px 0 0 2px;
+    }
+
+    .control-panel {
+      position: fixed;
+      left: 18px;
+      top: 18px;
+      z-index: 10;
+      width: min(480px, calc(100vw - 36px));
+      max-height: calc(100vh - 36px);
+      overflow: auto;
+      padding: 14px 14px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 8px;
+      background: rgba(4, 7, 18, 0.58);
+      color: rgba(255, 255, 255, 0.9);
+      font: 12px/1.3 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 18px 55px rgba(0, 0, 0, 0.34);
+    }
+
+    .control-panel h2 {
+      margin: 0 0 10px;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .control-row {
+      display: grid;
+      grid-template-columns: minmax(108px, 1fr) 132px 42px;
+      gap: 10px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .control-row label {
+      color: rgba(255, 255, 255, 0.78);
+      white-space: nowrap;
+    }
+
+    .control-row output {
+      color: rgba(255, 228, 166, 0.92);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    .control-row input[type="range"] {
+      width: 100%;
+      accent-color: #ffd24f;
+    }
+
+    .workshop-link-panel {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      z-index: 9;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: min(520px, calc(100vw - 36px));
+      min-height: 42px;
+      padding: 11px 18px;
+      border: 1px solid rgba(255, 210, 79, 0.48);
+      border-radius: 8px;
+      background: rgba(4, 7, 18, 0.64);
+      color: rgba(255, 235, 180, 0.98);
+      font: 800 13px/1.2 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      text-align: center;
+      text-decoration: none;
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 18px 55px rgba(0, 0, 0, 0.34);
+      transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+    }
+  </style>
+</head>
+<body class="controls-hidden">
+  <canvas id="scene" aria-label="Procedural animated quantum background"></canvas>
+  <div id="titleScrim" class="title-scrim" aria-hidden="true"></div>
+  <img id="titleOverlay" class="title-overlay" src="ctqa_title_overlay.svg" alt="3rd CTQA workshop title overlay">
+  <section class="control-panel" aria-label="Rendering controls">
+    <h2>Orbit Controls</h2>
+    <div class="panel-actions">
+      <button id="fullscreenToggle" class="fullscreen-toggle" type="button" aria-label="Enter fullscreen" title="Enter fullscreen">
+        <span class="fullscreen-icon" aria-hidden="true"></span>
+      </button>
+      <button id="overlayToggle" class="overlay-toggle" type="button" aria-pressed="true">Hide title</button>
+      <button id="controlsToggle" class="controls-toggle" type="button" aria-pressed="false">Hide controls</button>
+      <button id="preset1Toggle" class="preset-toggle" type="button">Preset 1</button>
+      <button id="resetToggle" class="reset-toggle" type="button">Reset</button>
+    </div>
+    <a class="workshop-control-link" href="https://chicagotohoku.github.io/website/202606_3rd_workshop/index.html">
+      Workshop website
+    </a>
+    <div class="control-row">
+      <label for="particleSizeControl">Star size</label>
+      <input id="particleSizeControl" data-control="particleSize" type="range" min="0" max="100" step="1" value="18">
+      <output for="particleSizeControl">50</output>
+    </div>
+    <div class="control-row">
+      <label for="trailBrightnessControl">Trail brightness</label>
+      <input id="trailBrightnessControl" data-control="trailBrightness" type="range" min="0" max="100" step="1" value="100">
+      <output for="trailBrightnessControl">50</output>
+    </div>
+    <div class="control-row">
+      <label for="speedBrightnessControl">Speed factor</label>
+      <input id="speedBrightnessControl" data-control="trailSpeedBrightness" type="range" min="0" max="100" step="1" value="50">
+      <output for="speedBrightnessControl">50</output>
+    </div>
+    <div class="control-row">
+      <label for="ageBrightnessControl">Age factor</label>
+      <input id="ageBrightnessControl" data-control="trailAgeBrightness" type="range" min="0" max="100" step="1" value="100">
+      <output for="ageBrightnessControl">50</output>
+    </div>
+    <div class="control-row">
+      <label for="starAgeBrightnessControl">Star age glow</label>
+      <input id="starAgeBrightnessControl" data-control="starAgeBrightness" type="range" min="0" max="100" step="1" value="100">
+      <output for="starAgeBrightnessControl">50</output>
+    </div>
+    <div class="control-row">
+      <label for="trailThinnessControl">Trail thinness</label>
+      <input id="trailThinnessControl" data-control="trailThinness" type="range" min="0" max="100" step="1" value="100">
+      <output for="trailThinnessControl">50</output>
+    </div>
+    <div class="control-row">
+      <label for="trailLifetimeControl">Trail lifetime</label>
+      <input id="trailLifetimeControl" data-control="trailLifetime" type="range" min="0" max="100" step="1" value="100">
+      <output for="trailLifetimeControl">50</output>
+    </div>
+    <div class="control-row">
+      <label for="bhGravityControl">BH gravity</label>
+      <input id="bhGravityControl" data-control="bhGravity" type="range" min="0" max="100" step="1" value="50">
+      <output for="bhGravityControl">50</output>
+    </div>
+    <div class="control-row">
+      <label for="bhDistanceControl">BH distance</label>
+      <input id="bhDistanceControl" data-control="bhDistance" type="range" min="0" max="100" step="1" value="50">
+      <output for="bhDistanceControl">50</output>
+    </div>
+    <div class="control-row">
+      <label for="timeScaleControl">Time speed</label>
+      <input id="timeScaleControl" data-control="timeScale" type="range" min="0" max="100" step="1" value="81">
+      <output for="timeScaleControl">50</output>
+    </div>
+  </section>
+  <button id="controlsRestore" class="controls-restore" type="button">Show controls</button>
+  <a class="workshop-link-panel" href="https://chicagotohoku.github.io/website/202606_3rd_workshop/index.html">
+    Workshop website
+  </a>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const CONFIG = {
+        designWidth: 1920,
+        designHeight: 1080,
+        loopSeconds: 10,
+        pixelRatioMax: 2,
+        controls: {
+          particleSize: 1,
+          trailBrightness: 1,
+          trailSpeedBrightness: 1,
+          trailAgeBrightness: 1,
+          starAgeBrightness: 1,
+          trailThinness: 1,
+          trailLifetime: 1,
+          bhGravity: 1,
+          bhDistance: 0.44,
+          timeScale: 1
+        },
+        background: {
+          baseTop: "#060814",
+          baseBottom: "#12081d",
+          centerVignette: 0.64
+        },
+        nodes: {
+          left: {
+            x: 0.28,
+            y: 0.505,
+            coreRadius: 28,
+            haloRadius: 405,
+            color: [255, 72, 22],
+            hotColor: [255, 250, 218],
+            phase: 0.08
+          },
+          right: {
+            x: 0.72,
+            y: 0.505,
+            coreRadius: 30,
+            haloRadius: 430,
+            color: [158, 58, 255],
+            hotColor: [255, 246, 232],
+            phase: 0.51
+          }
+        },
+        starCount: 760,
+        dustCount: 1120,
+        foregroundSparkCount: 145,
+        flowParticleCount: 132,
+        orbitParticleCount: 190,
+        orbitLineCount: 26,
+        physics: {
+          G: 1
+        },
+        transfer: {
+          mainCount: 1300,
+          sparkCount: 0,
+          trailBucketCount: 14,
+          trailBucketDuration: 0.09,
+          trailResolutionScale: 0.72,
+          trailHalfLife: 0.42,
+          trailAlphaCutoff: 0.08,
+          trailWidth: 0.32,
+          survivalBrightenAge: 18,
+          survivalAlphaBoost: 2.2,
+          survivalWidthBoost: 0.24,
+          minTrailAge: 1.8,
+          boundOnly: true,
+          boundMaxTries: 1200,
+          useSaddleEnergyFloor: false,
+          saddleEnergyMargin: 0.04,
+          survivorCloneMinAge: 6,
+          clonePositionJitter: 4.5,
+          cloneVelocityAngleJitter: 0.018,
+          guideTube: 24,
+          initialSpeed: 104,
+          mainSpeedMin: 0.038,
+          mainSpeedMax: 0.072,
+          sourceLeft: {
+            x: 0.28,
+            y: 0.5,
+            mass: 6200000,
+            softening: 155,
+            captureRadius: 54,
+            emitRadius: 74
+          },
+          sourceRight: {
+            x: 0.72,
+            y: 0.5,
+            mass: 6600000,
+            softening: 165,
+            captureRadius: 58,
+            emitRadius: 76
+          }
+        }
+      };
+
+      const canvas = document.getElementById("scene");
+      const ctx = canvas.getContext("2d", { alpha: false });
+      const fullscreenToggle = document.getElementById("fullscreenToggle");
+      const overlayToggle = document.getElementById("overlayToggle");
+      const controlsToggle = document.getElementById("controlsToggle");
+      const controlsRestore = document.getElementById("controlsRestore");
+      const preset1Toggle = document.getElementById("preset1Toggle");
+      const resetToggle = document.getElementById("resetToggle");
+      const controlInputs = Array.from(document.querySelectorAll("[data-control]"));
+      const trailCanvas = document.createElement("canvas");
+      const trailCtx = trailCanvas.getContext("2d", { alpha: true });
+      const trailBuckets = [];
+      let trailBucketIndex = 0;
+      let trailBucketElapsed = 0;
+
+      const CONTROL_MAP = {
+        particleSize: { min: 0.08, mid: 1, max: 5 },
+        trailBrightness: { min: 0.02, mid: 1, max: 12 },
+        trailSpeedBrightness: { min: 0, mid: 1, max: 12 },
+        trailAgeBrightness: { min: 0, mid: 1, max: 12 },
+        starAgeBrightness: { min: 0, mid: 1, max: 12 },
+        trailThinness: { min: 0.15, mid: 1, max: 8 },
+        trailLifetime: { min: 0.1, mid: 1, max: 12 },
+        bhGravity: { min: 0.05, mid: 1, max: 8 },
+        bhDistance: { min: 0.2, mid: 0.44, max: 0.76 },
+        timeScale: { min: 0.05, mid: 1, max: 8 }
+      };
+      const PRESET_1_CONTROL_VALUES = {
+        particleSize: 18,
+        trailBrightness: 100,
+        trailSpeedBrightness: 50,
+        trailAgeBrightness: 100,
+        starAgeBrightness: 100,
+        trailThinness: 100,
+        trailLifetime: 100,
+        bhGravity: 50,
+        bhDistance: 50,
+        timeScale: 81
+      };
+      const RESET_CONTROL_VALUES = {
+        particleSize: 50,
+        trailBrightness: 50,
+        trailSpeedBrightness: 50,
+        trailAgeBrightness: 50,
+        starAgeBrightness: 50,
+        trailThinness: 50,
+        trailLifetime: 50,
+        bhGravity: 50,
+        bhDistance: 50,
+        timeScale: 50
+      };
+
+      let viewport = {
+        width: 1,
+        height: 1,
+        ratio: 1,
+        scale: 1,
+        offsetX: 0,
+        offsetY: 0
+      };
+
+      const starfield = [];
+      const dust_particles = [];
+      const flow_particles = [];
+      const foreground_sparks = [];
+      const orbitParticlesLeft = [];
+      const orbitParticlesRight = [];
+      const orbitLinesLeft = [];
+      const orbitLinesRight = [];
+      const mainLinkParticles = [];
+      const sparkParticles = [];
+      const sources = {
+        left: null,
+        right: null,
+        saddle: null
+      };
+      let lastFrameTime = 0;
+      let currentSceneTime = 0;
+
+      function mulberry32(seed) {
+        return function random() {
+          let t = seed += 0x6D2B79F5;
+          t = Math.imul(t ^ (t >>> 15), t | 1);
+          t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      const random = mulberry32(20260622);
+
+      function lerp(a, b, t) {
+        return a + (b - a) * t;
+      }
+
+      function loopPhase(time, offset = 0) {
+        return ((time / CONFIG.loopSeconds + offset) % 1 + 1) % 1;
+      }
+
+      function wave(time, offset = 0) {
+        return Math.sin((loopPhase(time, offset)) * Math.PI * 2);
+      }
+
+      function rgba(color, alpha) {
+        return `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${alpha})`;
+      }
+
+      function toScreenX(x) {
+        return viewport.offsetX + x * CONFIG.designWidth * viewport.scale;
+      }
+
+      function toScreenY(y) {
+        return viewport.offsetY + y * CONFIG.designHeight * viewport.scale;
+      }
+
+      function scaled(value) {
+        return value * viewport.scale;
+      }
+
+      function sourceNormalizedPosition(side) {
+        const distance = CONFIG.controls.bhDistance;
+        const x = side === "left" ? 0.5 - distance * 0.5 : 0.5 + distance * 0.5;
+        return {
+          x,
+          y: side === "left" ? CONFIG.transfer.sourceLeft.y : CONFIG.transfer.sourceRight.y
+        };
+      }
+
+      function nodePosition(node) {
+        const side = node === CONFIG.nodes.left ? "left" : "right";
+        const position = sourceNormalizedPosition(side);
+        return {
+          x: toScreenX(position.x),
+          y: toScreenY(node.y)
+        };
+      }
+
+      function initSources() {
+        const leftNode = CONFIG.nodes.left;
+        const rightNode = CONFIG.nodes.right;
+        const leftPosition = sourceNormalizedPosition("left");
+        const rightPosition = sourceNormalizedPosition("right");
+        sources.left = {
+          side: "left",
+          x: toScreenX(leftPosition.x),
+          y: toScreenY(leftPosition.y),
+          mass: CONFIG.transfer.sourceLeft.mass * viewport.scale,
+          softening: scaled(CONFIG.transfer.sourceLeft.softening),
+          captureRadius: scaled(CONFIG.transfer.sourceLeft.captureRadius),
+          emitRadius: scaled(CONFIG.transfer.sourceLeft.emitRadius),
+          color: leftNode.color,
+          hotColor: leftNode.hotColor,
+          phase: leftNode.phase,
+          pulse: 0
+        };
+        sources.right = {
+          side: "right",
+          x: toScreenX(rightPosition.x),
+          y: toScreenY(rightPosition.y),
+          mass: CONFIG.transfer.sourceRight.mass * viewport.scale,
+          softening: scaled(CONFIG.transfer.sourceRight.softening),
+          captureRadius: scaled(CONFIG.transfer.sourceRight.captureRadius),
+          emitRadius: scaled(CONFIG.transfer.sourceRight.emitRadius),
+          color: rightNode.color,
+          hotColor: rightNode.hotColor,
+          phase: rightNode.phase,
+          pulse: 0
+        };
+        sources.saddle = computeSaddlePoint();
+      }
+
+      function potentialAt(x, y) {
+        let potential = 0;
+        const gravity = CONFIG.physics.G * CONFIG.controls.bhGravity;
+        for (const source of [sources.left, sources.right]) {
+          const dx = x - source.x;
+          const dy = y - source.y;
+          const r = Math.max(Math.hypot(dx, dy), 1e-9);
+          potential -= gravity * source.mass / r;
+        }
+        return potential;
+      }
+
+      function computeSaddlePoint() {
+        const left = sources.left;
+        const right = sources.right;
+        const dx = right.x - left.x;
+        const dy = right.y - left.y;
+        const distance = Math.max(1e-9, Math.hypot(dx, dy));
+        const ux = dx / distance;
+        const uy = dy / distance;
+        let lo = Math.max(1e-6, left.captureRadius / distance);
+        let hi = Math.min(1 - 1e-6, 1 - right.captureRadius / distance);
+
+        for (let i = 0; i < 72; i += 1) {
+          const t = (lo + hi) * 0.5;
+          const rLeft = Math.max(1e-9, t * distance);
+          const rRight = Math.max(1e-9, (1 - t) * distance);
+          const fieldAlong = CONFIG.physics.G * left.mass / (rLeft * rLeft) - CONFIG.physics.G * right.mass / (rRight * rRight);
+          if (fieldAlong > 0) lo = t;
+          else hi = t;
+        }
+
+        const t = (lo + hi) * 0.5;
+        const x = left.x + ux * distance * t;
+        const y = left.y + uy * distance * t;
+        return {
+          x,
+          y,
+          energy: potentialAt(x, y)
+        };
+      }
+
+      function initTransferParticles() {
+        mainLinkParticles.length = 0;
+        sparkParticles.length = 0;
+
+        for (let i = 0; i < CONFIG.transfer.mainCount; i += 1) {
+          const fromSide = i % 2 === 0 ? "left" : "right";
+          const p = {};
+          resetTransferParticle(p, fromSide, random());
+          mainLinkParticles.push(p);
+        }
+
+        for (let i = 0; i < CONFIG.transfer.sparkCount; i += 1) {
+          const side = random() < 0.52 ? "left" : "right";
+          const p = {};
+          resetSparkParticle(p, side, random());
+          sparkParticles.push(p);
+        }
+      }
+
+      function resetTransferParticle(p, fromSide, ageOffset = 0) {
+        let candidate = null;
+        let bestNearEscape = null;
+        const tries = CONFIG.transfer.boundOnly ? CONFIG.transfer.boundMaxTries : 1;
+        for (let i = 0; i < tries; i += 1) {
+          const speed = scaled(CONFIG.transfer.initialSpeed);
+          const angle = random() * Math.PI * 2;
+          const x = random() * viewport.width;
+          const y = random() * viewport.height;
+          const vx = Math.cos(angle) * speed;
+          const vy = Math.sin(angle) * speed;
+          const energy = specificOrbitalEnergy(x, y, vx, vy);
+          candidate = { x, y, vx, vy, energy };
+          if (energy < 0 && (!bestNearEscape || energy > bestNearEscape.energy)) {
+            bestNearEscape = candidate;
+          }
+          if (!CONFIG.transfer.boundOnly || isAcceptedInitialEnergy(energy)) break;
+        }
+        if (CONFIG.transfer.boundOnly && !isAcceptedInitialEnergy(candidate.energy)) {
+          candidate = bestNearEscape || candidate;
+        }
+
+        p.active = !CONFIG.transfer.boundOnly || isAcceptedInitialEnergy(candidate.energy);
+        p.x = candidate.x;
+        p.y = candidate.y;
+        p.prevX = p.x;
+        p.prevY = p.y;
+        p.vx = candidate.vx;
+        p.vy = candidate.vy;
+        p.energy0 = candidate.energy;
+        p.x0 = candidate.x;
+        p.y0 = candidate.y;
+        p.vx0 = candidate.vx;
+        p.vy0 = candidate.vy;
+        p.age = ageOffset * 10;
+        p.life = Infinity;
+        p.lastSource = fromSide || (random() < 0.5 ? "left" : "right");
+        p.targetSource = random() < 0.5 ? "left" : "right";
+        p.phase = random() * Math.PI * 2;
+        p.size = scaled(0.28 + Math.pow(random(), 1.35) * 0.82);
+      }
+
+      function cloneSurvivingOrbit(p) {
+        let chosen = null;
+        let seen = 0;
+        for (const candidate of mainLinkParticles) {
+          if (candidate === p || !candidate.active) continue;
+          if (candidate.age < CONFIG.transfer.survivorCloneMinAge) continue;
+          seen += 1;
+          if (random() < 1 / seen) chosen = candidate;
+        }
+
+        if (!chosen) {
+          p.active = false;
+          return;
+        }
+
+        const baseSpeed = Math.max(1e-9, Math.hypot(chosen.vx0, chosen.vy0));
+        const baseAngle = Math.atan2(chosen.vy0, chosen.vx0);
+        let x = chosen.x0 + scaled((random() - 0.5) * CONFIG.transfer.clonePositionJitter);
+        let y = chosen.y0 + scaled((random() - 0.5) * CONFIG.transfer.clonePositionJitter);
+        let angle = baseAngle + (random() - 0.5) * CONFIG.transfer.cloneVelocityAngleJitter;
+        let speed = baseSpeed;
+        let vx = Math.cos(angle) * speed;
+        let vy = Math.sin(angle) * speed;
+        let energy = specificOrbitalEnergy(x, y, vx, vy);
+
+        if (!isAcceptedInitialEnergy(energy)) {
+          x = chosen.x0;
+          y = chosen.y0;
+          vx = chosen.vx0;
+          vy = chosen.vy0;
+          energy = chosen.energy0;
+        }
+
+        p.active = true;
+        p.x = x;
+        p.y = y;
+        p.prevX = p.x;
+        p.prevY = p.y;
+        p.vx = vx;
+        p.vy = vy;
+        p.x0 = x;
+        p.y0 = y;
+        p.vx0 = vx;
+        p.vy0 = vy;
+        p.energy0 = energy;
+        p.age = 0;
+        p.life = Infinity;
+        p.phase = chosen.phase;
+        p.size = chosen.size;
+        p.lastSource = chosen.lastSource;
+        p.targetSource = chosen.targetSource;
+      }
+
+      function specificOrbitalEnergy(x, y, vx, vy) {
+        return 0.5 * (vx * vx + vy * vy) + potentialAt(x, y);
+      }
+
+      function accelerationAt(x, y) {
+        let ax = 0;
+        let ay = 0;
+        const gravity = CONFIG.physics.G * CONFIG.controls.bhGravity;
+        for (const source of [sources.left, sources.right]) {
+          const dx = source.x - x;
+          const dy = source.y - y;
+          const r2 = dx * dx + dy * dy;
+          const denom = Math.pow(Math.max(r2, 1), 1.5);
+          const force = gravity * source.mass / denom;
+          ax += dx * force;
+          ay += dy * force;
+        }
+        return { x: ax, y: ay };
+      }
+
+      function nearestSourceDistance(x, y) {
+        return Math.min(
+          Math.hypot(x - sources.left.x, y - sources.left.y),
+          Math.hypot(x - sources.right.x, y - sources.right.y)
+        );
+      }
+
+      function isAcceptedInitialEnergy(energy) {
+        if (energy >= 0) return false;
+        if (!CONFIG.transfer.useSaddleEnergyFloor || !sources.saddle) return true;
+        const floor = sources.saddle.energy * (1 - CONFIG.transfer.saddleEnergyMargin);
+        return energy > floor;
+      }
+
+      function resetSparkParticle(p, side, ageOffset = 0) {
+        const source = side === "left" ? sources.left : sources.right;
+        p.side = side;
+        p.age = ageOffset * (0.8 + random() * 1.2);
+        p.life = 0.65 + random() * 1.75;
+        p.angle = random() * Math.PI * 2;
+        p.radius = scaled(34 + random() * 92);
+        p.radiusDrift = scaled((random() - 0.38) * 22);
+        p.angularSpeed = (side === "left" ? 1 : -1) * (1.6 + random() * 3.4);
+        p.phase = random() * Math.PI * 2;
+        p.size = scaled(0.42 + random() * 1.4);
+        p.color = side === "left"
+          ? [255, Math.round(150 + random() * 78), Math.round(54 + random() * 58)]
+          : [Math.round(182 + random() * 48), Math.round(104 + random() * 64), 255];
+        p.x = source.x + Math.cos(p.angle) * p.radius;
+        p.y = source.y + Math.sin(p.angle) * p.radius * 0.62;
+      }
+
+      function getInfinityGuidePoint(u, lane = 0, time = currentSceneTime) {
+        const t = ((u % 1) + 1) % 1 * Math.PI * 2;
+        const cx = viewport.width / 2;
+        const cy = toScreenY(0.515);
+        const a = scaled(415);
+        const b = scaled(214);
+        const x = cx + Math.sin(t) * a;
+        const y = cy + Math.sin(t * 2) * b * 0.5;
+        const wobbleX = Math.sin(time * 0.34 + t * 2.1 + lane * 0.43) * scaled(2.8);
+        const wobbleY = Math.cos(time * 0.29 + t * 1.6 - lane * 0.37) * scaled(2.4);
+        const aheadT = t + 0.004 * Math.PI * 2;
+        const dx = Math.sin(aheadT) * a - Math.sin(t) * a;
+        const dy = Math.sin(aheadT * 2) * b * 0.5 - Math.sin(t * 2) * b * 0.5;
+        const length = Math.max(0.001, Math.hypot(dx, dy));
+        const nx = -dy / length;
+        const ny = dx / length;
+        const laneOffset = scaled(lane * 5.8 + Math.sin(time * 0.22 + t * 3.0 + lane) * 1.5);
+        return {
+          x: x + nx * laneOffset + wobbleX,
+          y: y + ny * laneOffset + wobbleY
+        };
+      }
+
+      function getInfinityGuideTangent(u, lane = 0, time = currentSceneTime) {
+        const a = getInfinityGuidePoint(u + 0.0025, lane, time);
+        const b = getInfinityGuidePoint(u - 0.0025, lane, time);
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        const length = Math.max(0.001, Math.hypot(dx, dy));
+        return {
+          x: dx / length,
+          y: dy / length
+        };
+      }
+
+      function applyGuideAttractor(p, dt) {
+        const guide = getInfinityGuidePoint(p.u, p.lane, currentSceneTime);
+        const tangent = getInfinityGuideTangent(p.u, p.lane, currentSceneTime);
+        const dx = guide.x - p.x;
+        const dy = guide.y - p.y;
+        const along = dx * tangent.x + dy * tangent.y;
+        const normalX = dx - along * tangent.x;
+        const normalY = dy - along * tangent.y;
+        const guideStrength = CONFIG.physics.guideStrength * (1.1 + 0.22 * Math.sin(p.phase));
+        const drive = scaled(72 + 42 * p.speedU / CONFIG.transfer.mainSpeedMax);
+        return {
+          x: normalX * guideStrength + tangent.x * drive * p.direction,
+          y: normalY * guideStrength + tangent.y * drive * p.direction
+        };
+      }
+
+      function advanceParticleRK4(p, dt) {
+        const a1 = accelerationAt(p.x, p.y);
+        const k1x = p.vx;
+        const k1y = p.vy;
+        const k1vx = a1.x;
+        const k1vy = a1.y;
+
+        const a2 = accelerationAt(
+          p.x + k1x * dt * 0.5,
+          p.y + k1y * dt * 0.5
+        );
+        const k2x = p.vx + k1vx * dt * 0.5;
+        const k2y = p.vy + k1vy * dt * 0.5;
+        const k2vx = a2.x;
+        const k2vy = a2.y;
+
+        const a3 = accelerationAt(
+          p.x + k2x * dt * 0.5,
+          p.y + k2y * dt * 0.5
+        );
+        const k3x = p.vx + k2vx * dt * 0.5;
+        const k3y = p.vy + k2vy * dt * 0.5;
+        const k3vx = a3.x;
+        const k3vy = a3.y;
+
+        const a4 = accelerationAt(
+          p.x + k3x * dt,
+          p.y + k3y * dt
+        );
+        const k4x = p.vx + k3vx * dt;
+        const k4y = p.vy + k3vy * dt;
+        const k4vx = a4.x;
+        const k4vy = a4.y;
+
+        p.x += (dt / 6) * (k1x + 2 * k2x + 2 * k3x + k4x);
+        p.y += (dt / 6) * (k1y + 2 * k2y + 2 * k3y + k4y);
+        p.vx += (dt / 6) * (k1vx + 2 * k2vx + 2 * k3vx + k4vx);
+        p.vy += (dt / 6) * (k1vy + 2 * k2vy + 2 * k3vy + k4vy);
+      }
+
+      function updateMainLinkParticles(dt, time) {
+        const margin = scaled(12);
+
+        sources.left.pulse *= Math.pow(0.06, dt);
+        sources.right.pulse *= Math.pow(0.06, dt);
+
+        for (const p of mainLinkParticles) {
+          if (!p.active) continue;
+          p.prevX = p.x;
+          p.prevY = p.y;
+          p.age += dt;
+
+          advanceParticleRK4(p, dt);
+
+          if (p.x < -margin || p.x > viewport.width + margin || p.y < -margin || p.y > viewport.height + margin) {
+            cloneSurvivingOrbit(p);
+          }
+        }
+      }
+
+      function updateSparkParticles(dt, time) {
+        for (const p of sparkParticles) {
+          p.age += dt;
+          if (p.age > p.life) {
+            resetSparkParticle(p, p.side === "left" ? "right" : "left");
+            continue;
+          }
+          const source = p.side === "left" ? sources.left : sources.right;
+          const lifeT = Math.max(0, Math.min(1, p.age / p.life));
+          const localRadius = p.radius + p.radiusDrift * lifeT + Math.sin(time * 2.1 + p.phase) * scaled(5);
+          const angle = p.angle + p.angularSpeed * p.age + Math.sin(time * 0.7 + p.phase) * 0.18;
+          const squash = 0.54 + 0.16 * Math.sin(p.phase + time * 0.44);
+          p.x = source.x + Math.cos(angle) * localRadius;
+          p.y = source.y + Math.sin(angle) * localRadius * squash;
+        }
+      }
+
+      function transferParticleColor(p, speed) {
+        const t = Math.max(0, Math.min(1, p.x / viewport.width));
+        const left = [255, 130, 42];
+        const middle = [255, 206, 238];
+        const right = [178, 98, 255];
+        const color = t < 0.5
+          ? [
+              lerp(left[0], middle[0], t * 2),
+              lerp(left[1], middle[1], t * 2),
+              lerp(left[2], middle[2], t * 2)
+            ]
+          : [
+              lerp(middle[0], right[0], (t - 0.5) * 2),
+              lerp(middle[1], right[1], (t - 0.5) * 2),
+              lerp(middle[2], right[2], (t - 0.5) * 2)
+            ];
+        const boost = Math.max(0, Math.min(1, speed / scaled(720)));
+        const speedBrightness = effectiveTrailSpeedBrightness();
+        const baseBrightness = effectiveTrailBaseBrightness();
+        return {
+          color: color.map(Math.round),
+          alpha: 0.052 * baseBrightness + boost * 0.18 * speedBrightness
+        };
+      }
+
+      function timeSpeedBrightnessCompensation() {
+        return Math.max(0.34, Math.min(1, 1 / Math.sqrt(Math.max(0.05, CONFIG.controls.timeScale))));
+      }
+
+      function effectiveTrailSpeedBrightness() {
+        return CONFIG.controls.trailSpeedBrightness * timeSpeedBrightnessCompensation();
+      }
+
+      function effectiveTrailBaseBrightness() {
+        return lerp(1, timeSpeedBrightnessCompensation(), 0.6);
+      }
+
+      function effectiveTrailLifetimeScale() {
+        const timeScale = Math.max(0.05, CONFIG.controls.timeScale);
+        return CONFIG.controls.trailLifetime / Math.sqrt(timeScale);
+      }
+
+      function survivorGlow(p) {
+        return survivorGlowFor(p, CONFIG.controls.trailAgeBrightness);
+      }
+
+      function starAgeGlow(p) {
+        return survivorGlowFor(p, CONFIG.controls.starAgeBrightness);
+      }
+
+      function survivorGlowFor(p, factor) {
+        const t = Math.max(0, Math.min(1, (p.age - CONFIG.transfer.minTrailAge) / CONFIG.transfer.survivalBrightenAge));
+        const eased = t * t * (3 - 2 * t);
+        return {
+          alpha: 1 + eased * CONFIG.transfer.survivalAlphaBoost * factor,
+          width: 1 + eased * CONFIG.transfer.survivalWidthBoost
+        };
+      }
+
+      function resetTrailBuckets() {
+        trailCanvas.width = viewport.width;
+        trailCanvas.height = viewport.height;
+        trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+        trailBuckets.length = 0;
+        trailBucketIndex = 0;
+        trailBucketElapsed = 0;
+
+        const trailScale = Math.max(0.35, Math.min(1, CONFIG.transfer.trailResolutionScale));
+        for (let i = 0; i < CONFIG.transfer.trailBucketCount; i += 1) {
+          const bucketCanvas = document.createElement("canvas");
+          bucketCanvas.width = Math.max(1, Math.ceil(viewport.width * trailScale));
+          bucketCanvas.height = Math.max(1, Math.ceil(viewport.height * trailScale));
+          const bucketCtx = bucketCanvas.getContext("2d", { alpha: true });
+          bucketCtx.setTransform(trailScale, 0, 0, trailScale, 0, 0);
+          trailBuckets.push({ canvas: bucketCanvas, ctx: bucketCtx, scale: trailScale });
+        }
+      }
+
+      function clearTrailBucket(bucket) {
+        bucket.ctx.save();
+        bucket.ctx.setTransform(1, 0, 0, 1, 0, 0);
+        bucket.ctx.clearRect(0, 0, bucket.canvas.width, bucket.canvas.height);
+        bucket.ctx.restore();
+      }
+
+      function drawMainLinkTrails(dt) {
+        if (trailBuckets.length === 0) return;
+
+        trailBucketElapsed += dt;
+        const lifetimeScale = effectiveTrailLifetimeScale();
+        const bucketDuration = Math.max(0.016, CONFIG.transfer.trailBucketDuration * lifetimeScale);
+        while (trailBucketElapsed >= bucketDuration) {
+          trailBucketElapsed -= bucketDuration;
+          trailBucketIndex = (trailBucketIndex + 1) % trailBuckets.length;
+          clearTrailBucket(trailBuckets[trailBucketIndex]);
+        }
+
+        const currentBucketCtx = trailBuckets[trailBucketIndex].ctx;
+        currentBucketCtx.save();
+        currentBucketCtx.globalCompositeOperation = "lighter";
+        currentBucketCtx.lineCap = "round";
+        for (const p of mainLinkParticles) {
+          if (!p.active) continue;
+          if (p.age < CONFIG.transfer.minTrailAge) continue;
+          const speed = Math.hypot(p.vx, p.vy);
+          const style = transferParticleColor(p, speed);
+          const survival = survivorGlow(p);
+          const width = ((scaled(CONFIG.transfer.trailWidth) + Math.min(scaled(0.62), speed / scaled(620))) * survival.width) / CONFIG.controls.trailThinness;
+          const alpha = Math.min(0.95, style.alpha * survival.alpha * CONFIG.controls.trailBrightness);
+
+          currentBucketCtx.strokeStyle = rgba(style.color, alpha);
+          currentBucketCtx.lineWidth = width;
+          currentBucketCtx.beginPath();
+          currentBucketCtx.moveTo(p.prevX, p.prevY);
+          currentBucketCtx.lineTo(p.x, p.y);
+          currentBucketCtx.stroke();
+
+          currentBucketCtx.strokeStyle = rgba([255, 238, 248], alpha * 0.82);
+          currentBucketCtx.lineWidth = Math.max(scaled(0.14), width * 0.34);
+          currentBucketCtx.beginPath();
+          currentBucketCtx.moveTo(p.prevX, p.prevY);
+          currentBucketCtx.lineTo(p.x, p.y);
+          currentBucketCtx.stroke();
+        }
+        currentBucketCtx.restore();
+
+        trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+        trailCtx.save();
+        trailCtx.globalCompositeOperation = "lighter";
+        for (let ageIndex = trailBuckets.length - 1; ageIndex >= 0; ageIndex -= 1) {
+          const bucket = trailBuckets[(trailBucketIndex - ageIndex + trailBuckets.length) % trailBuckets.length];
+          const bucketAge = ageIndex * bucketDuration + trailBucketElapsed;
+          const rawAlpha = Math.pow(0.5, bucketAge / Math.max(0.001, CONFIG.transfer.trailHalfLife * lifetimeScale));
+          const alpha = Math.max(0, rawAlpha - CONFIG.transfer.trailAlphaCutoff) / Math.max(0.001, 1 - CONFIG.transfer.trailAlphaCutoff);
+          if (alpha <= 0) continue;
+          trailCtx.globalAlpha = alpha;
+          trailCtx.drawImage(bucket.canvas, 0, 0, trailCanvas.width, trailCanvas.height);
+        }
+        trailCtx.globalAlpha = 1;
+        trailCtx.restore();
+      }
+
+      function drawMainLinkParticles() {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        for (const p of mainLinkParticles) {
+          if (!p.active) continue;
+          if (p.age < CONFIG.transfer.minTrailAge * 0.55) continue;
+          const speed = Math.hypot(p.vx, p.vy);
+          const style = transferParticleColor(p, speed);
+          const survival = starAgeGlow(p);
+          const radius = p.size * CONFIG.controls.particleSize * (0.72 + Math.min(0.75, speed / scaled(620))) * Math.min(1.42, survival.width);
+          const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 6);
+          glow.addColorStop(0, rgba([255, 248, 232], Math.min(0.48, 0.28 * survival.alpha)));
+          glow.addColorStop(0.34, rgba(style.color, Math.min(0.34, 0.18 * survival.alpha)));
+          glow.addColorStop(1, rgba(style.color, 0));
+          ctx.fillStyle = glow;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, radius * 6, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = rgba([255, 248, 232], Math.min(0.38, 0.22 * survival.alpha));
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, Math.max(scaled(0.35), radius * 0.38), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function drawSparkParticles() {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        for (const p of sparkParticles) {
+          const lifeT = Math.max(0, Math.min(1, p.age / p.life));
+          const fade = Math.sin(lifeT * Math.PI);
+          const radius = p.size * CONFIG.controls.particleSize * (0.7 + fade * 0.7);
+          const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 7);
+          glow.addColorStop(0, rgba([255, 246, 226], 0.26 * fade));
+          glow.addColorStop(0.33, rgba(p.color, 0.24 * fade));
+          glow.addColorStop(1, rgba(p.color, 0));
+          ctx.fillStyle = glow;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, radius * 7, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function seedScene() {
+        starfield.length = 0;
+        dust_particles.length = 0;
+        flow_particles.length = 0;
+        foreground_sparks.length = 0;
+        orbitParticlesLeft.length = 0;
+        orbitParticlesRight.length = 0;
+        orbitLinesLeft.length = 0;
+        orbitLinesRight.length = 0;
+
+        for (let i = 0; i < CONFIG.starCount; i += 1) {
+          const x = random();
+          const y = random();
+          const sideBias = x + (random() - 0.5) * 0.18;
+          starfield.push({
+            x,
+            y,
+            r: lerp(0.26, 2.65, Math.pow(random(), 2.6)),
+            phase: random(),
+            speed: lerp(0.35, 1.65, random()),
+            alpha: lerp(0.12, 0.82, Math.pow(random(), 0.75)),
+            hue: sideBias < 0.42 ? "warm" : sideBias > 0.61 ? "violet" : "magenta"
+          });
+        }
+
+        for (let i = 0; i < CONFIG.dustCount; i += 1) {
+          const x = random();
+          const side = x + (random() - 0.5) * 0.16;
+          dust_particles.push({
+            x,
+            y: random(),
+            r: lerp(0.22, 2.15, Math.pow(random(), 2.1)),
+            drift: lerp(0.002, 0.014, random()),
+            phase: random(),
+            alpha: lerp(0.035, 0.32, Math.pow(random(), 0.82)),
+            color: side < 0.43
+              ? [255, lerp(76, 178, random()), 42]
+              : side > 0.62
+                ? [lerp(116, 210, random()), 72, 255]
+                : [255, lerp(70, 150, random()), 220]
+          });
+        }
+
+        for (let i = 0; i < CONFIG.flowParticleCount; i += 1) {
+          flow_particles.push({
+            u: random(),
+            phase: random(),
+            speed: lerp(0.34, 1.05, random()),
+            radius: lerp(0.85, 3.5, Math.pow(random(), 0.8)),
+            warm: random() < 0.52,
+            direction: random() < 0.5 ? -1 : 1,
+            lane: Math.floor(random() * 5)
+          });
+        }
+
+        for (let i = 0; i < CONFIG.foregroundSparkCount; i += 1) {
+          const x = random();
+          const centerBias = 1 - Math.abs(x - 0.5) * 1.55;
+          foreground_sparks.push({
+            x,
+            y: lerp(0.16, 0.94, random()),
+            r: lerp(0.45, 3.1, Math.pow(random(), 1.8)),
+            phase: random(),
+            speed: lerp(0.6, 1.65, random()),
+            alpha: lerp(0.16, 0.62, random()) * Math.max(0.25, centerBias)
+          });
+        }
+
+        seedOrbitSet(orbitLinesLeft, orbitParticlesLeft, "left");
+        seedOrbitSet(orbitLinesRight, orbitParticlesRight, "right");
+      }
+
+      function seedOrbitSet(lines, particles, side) {
+        for (let i = 0; i < CONFIG.orbitLineCount; i += 1) {
+          lines.push({
+            rx: lerp(92, 286, random()),
+            ry: lerp(34, 132, random()),
+            rotate: lerp(-0.88, 0.88, random()) + (side === "left" ? -0.22 : 0.22),
+            phase: random(),
+            speed: lerp(0.08, 0.34, random()) * (random() < 0.5 ? -1 : 1),
+            alpha: lerp(0.035, 0.18, random()),
+            width: lerp(0.35, 1.45, random()),
+            lobe: Math.floor(2 + random() * 4),
+            wobble: lerp(0.05, 0.22, random()),
+            spiral: lerp(-0.11, 0.11, random())
+          });
+        }
+
+        for (let i = 0; i < CONFIG.orbitParticleCount; i += 1) {
+          particles.push({
+            orbitIndex: Math.floor(random() * CONFIG.orbitLineCount),
+            phase: random(),
+            speed: lerp(0.32, 1.25, random()) * (random() < 0.5 ? -1 : 1),
+            size: lerp(1.0, 3.8, random()),
+            alpha: lerp(0.22, 0.78, random())
+          });
+        }
+      }
+
+      function resize() {
+        viewport.ratio = Math.min(window.devicePixelRatio || 1, CONFIG.pixelRatioMax);
+        viewport.width = Math.max(1, Math.floor(window.innerWidth * viewport.ratio));
+        viewport.height = Math.max(1, Math.floor(window.innerHeight * viewport.ratio));
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        const scaleX = viewport.width / CONFIG.designWidth;
+        const scaleY = viewport.height / CONFIG.designHeight;
+        viewport.scale = Math.max(scaleX, scaleY);
+        viewport.offsetX = (viewport.width - CONFIG.designWidth * viewport.scale) / 2;
+        viewport.offsetY = (viewport.height - CONFIG.designHeight * viewport.scale) / 2;
+        resetTrailBuckets();
+        initSources();
+        initTransferParticles();
+      }
+
+      function updateFullscreenButton() {
+        const active = document.fullscreenElement === document.documentElement || document.fullscreenElement === document.body;
+        fullscreenToggle.classList.toggle("is-fullscreen", active);
+        fullscreenToggle.setAttribute("aria-label", active ? "Exit fullscreen" : "Enter fullscreen");
+        fullscreenToggle.title = active ? "Exit fullscreen" : "Enter fullscreen";
+        resize();
+      }
+
+      function setupControls() {
+        for (const input of controlInputs) {
+          const key = input.dataset.control;
+          const output = input.parentElement.querySelector("output");
+          const updateValue = () => {
+            const uiValue = Number(input.value);
+            CONFIG.controls[key] = controlValueToInternal(key, uiValue);
+            output.textContent = String(Math.round(uiValue));
+            if (key === "bhDistance" && sources.left && sources.right) {
+              initSources();
+            }
+          };
+          input.addEventListener("input", updateValue);
+          updateValue();
+        }
+      }
+
+      function controlValueToInternal(key, uiValue) {
+        const map = CONTROL_MAP[key];
+        if (!map) return uiValue;
+        const t = Math.max(0, Math.min(100, uiValue)) / 100;
+        if (t <= 0.5) return lerp(map.min, map.mid, t / 0.5);
+        return lerp(map.mid, map.max, (t - 0.5) / 0.5);
+      }
+
+      function toggleTitleOverlay() {
+        const hidden = document.body.classList.toggle("overlay-hidden");
+        overlayToggle.textContent = hidden ? "Show title" : "Hide title";
+        overlayToggle.setAttribute("aria-pressed", String(!hidden));
+      }
+
+      function setControlsHidden(hidden) {
+        document.body.classList.toggle("controls-hidden", hidden);
+        controlsToggle.setAttribute("aria-pressed", String(hidden));
+      }
+
+      function applyControlValues(values) {
+        for (const input of controlInputs) {
+          input.value = String(values[input.dataset.control] ?? 50);
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+        resetTrailBuckets();
+        initSources();
+        initTransferParticles();
+      }
+
+      function applyPreset1() {
+        applyControlValues(PRESET_1_CONTROL_VALUES);
+      }
+
+      function resetScene() {
+        applyControlValues(RESET_CONTROL_VALUES);
+      }
+
+      async function toggleFullscreen() {
+        try {
+          if (document.fullscreenElement) {
+            await document.exitFullscreen();
+          } else {
+            await document.documentElement.requestFullscreen();
+          }
+        } catch (error) {
+          console.warn("Fullscreen request failed", error);
+        }
+      }
+
+      function clearBackground(time) {
+        const sky = ctx.createLinearGradient(0, 0, 0, viewport.height);
+        sky.addColorStop(0, CONFIG.background.baseTop);
+        sky.addColorStop(0.56, "#11081b");
+        sky.addColorStop(1, CONFIG.background.baseBottom);
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, viewport.width, viewport.height);
+
+        const leftPos = nodePosition(CONFIG.nodes.left);
+        const rightPos = nodePosition(CONFIG.nodes.right);
+        const redWash = ctx.createRadialGradient(leftPos.x, leftPos.y, 0, leftPos.x, leftPos.y, scaled(650));
+        redWash.addColorStop(0, "rgba(160, 30, 8, 0.42)");
+        redWash.addColorStop(0.42, "rgba(118, 16, 12, 0.24)");
+        redWash.addColorStop(1, "rgba(118, 16, 12, 0)");
+        ctx.fillStyle = redWash;
+        ctx.fillRect(0, 0, viewport.width, viewport.height);
+
+        const violetWash = ctx.createRadialGradient(rightPos.x, rightPos.y, 0, rightPos.x, rightPos.y, scaled(720));
+        violetWash.addColorStop(0, "rgba(118, 35, 210, 0.48)");
+        violetWash.addColorStop(0.44, "rgba(62, 20, 150, 0.24)");
+        violetWash.addColorStop(1, "rgba(62, 20, 150, 0)");
+        ctx.fillStyle = violetWash;
+        ctx.fillRect(0, 0, viewport.width, viewport.height);
+
+        const pulse = 0.5 + 0.5 * wave(time, 0.17);
+        const central = ctx.createRadialGradient(viewport.width / 2, viewport.height * 0.52, 0, viewport.width / 2, viewport.height * 0.52, scaled(620));
+        central.addColorStop(0, `rgba(255, 185, 224, ${0.055 + pulse * 0.03})`);
+        central.addColorStop(1, "rgba(255, 185, 224, 0)");
+        ctx.fillStyle = central;
+        ctx.fillRect(0, 0, viewport.width, viewport.height);
+      }
+
+      function starColor(star, twinkle) {
+        if (star.hue === "warm") return `rgba(255, ${Math.floor(170 + twinkle * 70)}, 90, `;
+        if (star.hue === "violet") return `rgba(${Math.floor(130 + twinkle * 85)}, 110, 255, `;
+        if (star.hue === "magenta") return `rgba(255, ${Math.floor(120 + twinkle * 80)}, 235, `;
+        return "rgba(255, 246, 220, ";
+      }
+
+      function drawStarfield(time) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        for (const star of starfield) {
+          const driftX = Math.sin(time * 0.07 + star.phase * Math.PI * 2) * scaled(5);
+          const driftY = Math.cos(time * 0.05 + star.phase * Math.PI * 2) * scaled(3);
+          const x = star.x * viewport.width + driftX;
+          const y = star.y * viewport.height + driftY;
+          const twinkle = 0.5 + 0.5 * Math.sin(time * star.speed + star.phase * Math.PI * 2);
+          const alpha = star.alpha * (0.32 + twinkle * 0.68);
+          const radius = scaled(star.r) * (0.72 + twinkle * 0.55);
+          ctx.fillStyle = `${starColor(star, twinkle)}${alpha})`;
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function drawDustParticles(time) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        for (const dust of dust_particles) {
+          const x = ((dust.x + time * dust.drift) % 1) * viewport.width;
+          const y = (dust.y + Math.sin(time * 0.11 + dust.phase * 6.283) * 0.009) * viewport.height;
+          const pulse = 0.55 + 0.45 * Math.sin(time * 0.9 + dust.phase * 6.283);
+          ctx.fillStyle = rgba(dust.color.map(Math.round), dust.alpha * pulse);
+          ctx.beginPath();
+          ctx.arc(x, y, scaled(dust.r) * (0.8 + pulse * 0.6), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function drawCore(node, time, pulseBoost = 0) {
+        const pos = nodePosition(node);
+        const warm = node.color[0] > node.color[2];
+        const pulse = 0.72 + 0.28 * Math.sin(time * 0.72 + node.phase * Math.PI * 2) + pulseBoost * 0.18;
+        const shimmer = 0.86 + 0.14 * Math.sin(time * 1.7 + node.phase * 7.2);
+        const haloRadius = scaled(node.haloRadius) * (0.94 + pulse * 0.12);
+        const coreRadius = scaled(node.coreRadius) * (0.86 + pulse * 0.16);
+        const midColor = warm ? [255, 132, 26] : [213, 52, 255];
+        const outerColor = warm ? [176, 28, 10] : [70, 38, 190];
+        const rimColor = warm ? [255, 206, 90] : [98, 104, 255];
+
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+
+        let halo = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, haloRadius);
+        halo.addColorStop(0, rgba(node.hotColor, 0.22 * pulse));
+        halo.addColorStop(0.06, rgba(rimColor, 0.20 * shimmer));
+        halo.addColorStop(0.20, rgba(midColor, 0.22 * pulse));
+        halo.addColorStop(0.48, rgba(node.color, 0.115));
+        halo.addColorStop(0.78, rgba(outerColor, 0.06));
+        halo.addColorStop(1, rgba(outerColor, 0));
+        ctx.fillStyle = halo;
+        ctx.fillRect(pos.x - haloRadius, pos.y - haloRadius, haloRadius * 2, haloRadius * 2);
+
+        let core = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, coreRadius * 4.6);
+        core.addColorStop(0, "rgba(255, 255, 248, 0.98)");
+        core.addColorStop(0.055, "rgba(255, 255, 248, 0.9)");
+        core.addColorStop(0.14, rgba(node.hotColor, 0.7));
+        core.addColorStop(0.31, rgba(rimColor, 0.52));
+        core.addColorStop(0.58, rgba(midColor, 0.33));
+        core.addColorStop(1, rgba(outerColor, 0));
+        ctx.fillStyle = core;
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, coreRadius * 4.6, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      function drawSources(time) {
+        drawCore(CONFIG.nodes.left, time, sources.left ? sources.left.pulse : 0);
+        drawCore(CONFIG.nodes.right, time, sources.right ? sources.right.pulse : 0);
+      }
+
+      function drawNodeFilaments(node, side, time) {
+        const center = nodePosition(node);
+        const direction = side === "left" ? -1 : 1;
+        const baseColor = side === "left" ? [255, 94, 34] : [152, 82, 255];
+        const hotColor = side === "left" ? [255, 210, 120] : [234, 184, 255];
+        const pulse = 0.65 + 0.35 * Math.sin(time * 0.55 + node.phase * 6.283);
+
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        for (let i = 0; i < 30; i += 1) {
+          const f = i / 30;
+          const phase = f * Math.PI * 2 + node.phase * 4;
+          const sideFan = Math.sin(phase * 2 + time * 0.22);
+          const angle = phase + time * (0.045 + f * 0.02) * direction;
+          const startRadius = scaled(28 + 18 * Math.sin(phase + time * 0.6));
+          const length = scaled(132 + 210 * Math.pow((i % 9) / 8, 1.4));
+          const curl = scaled(70 + 92 * Math.sin(phase * 1.7 + time * 0.35));
+          const start = {
+            x: center.x + Math.cos(angle) * startRadius,
+            y: center.y + Math.sin(angle) * startRadius
+          };
+          const end = {
+            x: center.x + Math.cos(angle + direction * 0.34 + sideFan * 0.18) * length,
+            y: center.y + Math.sin(angle + direction * 0.34 + sideFan * 0.18) * length * 0.58
+          };
+          const cp1 = {
+            x: center.x + Math.cos(angle + direction * 0.42) * (length * 0.34),
+            y: center.y + Math.sin(angle + direction * 0.42) * (length * 0.24) + Math.sin(phase + time) * curl * 0.26
+          };
+          const cp2 = {
+            x: center.x + Math.cos(angle + direction * 0.78) * (length * 0.68),
+            y: center.y + Math.sin(angle + direction * 0.78) * (length * 0.46) - Math.cos(phase * 1.3 + time) * curl * 0.22
+          };
+          const alpha = (0.018 + 0.048 * ((i % 5) / 4)) * pulse;
+          ctx.strokeStyle = rgba(i % 4 === 0 ? hotColor : baseColor, alpha);
+          ctx.lineWidth = scaled(0.45 + (i % 6) * 0.18);
+          ctx.beginPath();
+          ctx.moveTo(start.x, start.y);
+          ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      function drawFieldLines(node, side, time) {
+        const center = nodePosition(node);
+        const direction = side === "left" ? -1 : 1;
+        const color = side === "left" ? [255, 92, 42] : [142, 86, 255];
+
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        for (let i = 0; i < 24; i += 1) {
+          const f = i / 23;
+          const vertical = (f - 0.5) * scaled(610);
+          const startSpread = Math.sin(f * Math.PI) * scaled(72);
+          const start = {
+            x: center.x + direction * scaled(18 + startSpread * 0.12),
+            y: center.y + vertical * 0.38
+          };
+          const end = {
+            x: center.x + direction * scaled(540 + Math.sin(f * Math.PI) * 265),
+            y: center.y + vertical * (0.92 + 0.08 * Math.sin(time * 0.2 + f * 5))
+          };
+          const bow = direction * scaled(250 + Math.sin(time * 0.18 + f * 7) * 54);
+          const cp1 = {
+            x: center.x + direction * scaled(160) + bow * 0.16,
+            y: center.y + vertical * 0.18 + Math.sin(time * 0.23 + f * 8) * scaled(22)
+          };
+          const cp2 = {
+            x: center.x + direction * scaled(380) + bow,
+            y: center.y + vertical * 0.78 + Math.cos(time * 0.19 + f * 9) * scaled(28)
+          };
+          const alpha = (0.018 + 0.042 * Math.sin(f * Math.PI)) * (0.8 + 0.2 * Math.sin(time * 0.4 + f * 6.283));
+          ctx.strokeStyle = rgba(color, alpha);
+          ctx.lineWidth = scaled(0.45 + 0.5 * Math.sin(f * Math.PI));
+          ctx.beginPath();
+          ctx.moveTo(start.x, start.y);
+          ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      function orbitPoint(center, line, theta, time) {
+        const phase = time * line.speed + line.phase * Math.PI * 2;
+        const rx = scaled(line.rx * (1 + 0.045 * Math.sin(time * 0.61 + line.phase * 7)));
+        const ry = scaled(line.ry * (1 + 0.085 * Math.cos(time * 0.47 + line.phase * 9)));
+        const rotation = line.rotate + 0.12 * Math.sin(time * 0.23 + line.phase * 6.283);
+        const lobe = line.lobe || 3;
+        const warp = 1 + line.wobble * Math.sin(theta * lobe + phase * 1.7);
+        const spiral = 1 + line.spiral * Math.sin(theta + phase);
+        const x = Math.cos(theta + phase) * rx * warp * spiral + Math.sin(theta * 2.0 - phase) * rx * 0.035;
+        const y = Math.sin(theta + phase * 0.82) * ry * (1 + line.wobble * Math.cos(theta * (lobe - 1) - phase)) + Math.sin(theta * 3.0 + phase) * ry * 0.045;
+        return {
+          x: center.x + x * Math.cos(rotation) - y * Math.sin(rotation),
+          y: center.y + x * Math.sin(rotation) + y * Math.cos(rotation)
+        };
+      }
+
+      function drawOrbitField(node, lines, orbitParticles, side, time) {
+        const center = nodePosition(node);
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+
+        for (const line of lines) {
+          const color = side === "left" ? [255, 210, 115] : [202, 148, 255];
+          ctx.strokeStyle = rgba(color, line.alpha * (0.8 + 0.2 * wave(time, line.phase)));
+          ctx.lineWidth = scaled(line.width);
+          ctx.beginPath();
+          const steps = 160;
+          for (let i = 0; i <= steps; i += 1) {
+            const theta = i / steps * Math.PI * 2;
+            const p = orbitPoint(center, line, theta, time);
+            if (i === 0) ctx.moveTo(p.x, p.y);
+            else ctx.lineTo(p.x, p.y);
+          }
+          ctx.stroke();
+        }
+
+        for (const particle of orbitParticles) {
+          const line = lines[particle.orbitIndex % lines.length];
+          const theta = particle.phase * Math.PI * 2 + time * particle.speed;
+          const p = orbitPoint(center, line, theta, time);
+          const twinkle = 0.62 + 0.38 * Math.sin(time * 2.1 + particle.phase * 6.283);
+          const color = side === "left" ? [255, 230, 158] : [225, 188, 255];
+          const radius = scaled(particle.size) * (0.75 + twinkle * 0.7);
+          const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 7);
+          glow.addColorStop(0, rgba(color, particle.alpha * twinkle));
+          glow.addColorStop(0.4, rgba(color, particle.alpha * twinkle * 0.22));
+          glow.addColorStop(1, rgba(color, 0));
+          ctx.fillStyle = glow;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, radius * 7, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function infinityPoint(u, time, wobble = true) {
+        const t = u * Math.PI * 2;
+        const cx = viewport.width / 2;
+        const cy = toScreenY(0.52);
+        const a = scaled(405);
+        const b = scaled(214);
+        const x = cx + Math.sin(t) * a;
+        const y = cy + Math.sin(t * 2) * b * 0.5;
+        if (!wobble) return { x, y };
+        return {
+          x: x + Math.sin(time * 0.8 + t * 2.5) * scaled(7),
+          y: y + Math.cos(time * 0.66 + t * 1.7) * scaled(5)
+        };
+      }
+
+      function infinityLanePoint(u, time, lane = 0) {
+        const base = infinityPoint(u, time, true);
+        const ahead = infinityPoint((u + 0.006) % 1, time, true);
+        const dx = ahead.x - base.x;
+        const dy = ahead.y - base.y;
+        const length = Math.max(0.001, Math.hypot(dx, dy));
+        const nx = -dy / length;
+        const ny = dx / length;
+        const laneOffset = scaled(lane * 7.5 + Math.sin(time * 0.31 + u * Math.PI * 6 + lane) * 2.8);
+        return {
+          x: base.x + nx * laneOffset,
+          y: base.y + ny * laneOffset
+        };
+      }
+
+      function drawParametricStroke(points, strokeStyle, width) {
+        ctx.strokeStyle = strokeStyle;
+        ctx.lineWidth = width;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.beginPath();
+        points.forEach((point, index) => {
+          if (index === 0) ctx.moveTo(point.x, point.y);
+          else ctx.lineTo(point.x, point.y);
+        });
+        ctx.stroke();
+      }
+
+      function drawInfinityLink(time) {
+        const pulse = 0.68 + 0.32 * Math.sin(time * 0.64);
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+
+        const lanes = [-1, 0, 1];
+        for (const lane of lanes) {
+          const points = [];
+          const steps = 260;
+          for (let i = 0; i <= steps; i += 1) {
+            points.push(infinityLanePoint(i / steps, time + lane * 0.13, lane));
+          }
+          const laneAbs = Math.abs(lane);
+          const alpha = lane === 0 ? 0.045 + pulse * 0.018 : 0.02 + pulse * 0.012;
+          const width = lane === 0 ? scaled(1.15 + pulse * 0.25) : scaled(0.55 + (1 - laneAbs * 0.25) * 0.18);
+          const tint = lane < 0 ? "rgba(255, 132, 210," : lane > 0 ? "rgba(214, 144, 255," : "rgba(255, 248, 238,";
+
+          drawParametricStroke(points, `${tint}${alpha * 0.36})`, width + scaled(4.5 - laneAbs * 1.2));
+          drawParametricStroke(points, `${tint}${alpha})`, width);
+        }
+
+        const center = infinityPoint(0, time, false);
+        const crossingGlow = ctx.createRadialGradient(center.x, center.y, 0, center.x, center.y, scaled(92));
+        crossingGlow.addColorStop(0, `rgba(255, 247, 238, ${0.06 + pulse * 0.025})`);
+        crossingGlow.addColorStop(0.32, `rgba(255, 130, 232, ${0.035 + pulse * 0.018})`);
+        crossingGlow.addColorStop(1, "rgba(255, 130, 232, 0)");
+        ctx.fillStyle = crossingGlow;
+        ctx.beginPath();
+        ctx.arc(center.x, center.y, scaled(92), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function drawFlowParticles(time) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        for (const particle of flow_particles) {
+          const u = (particle.u + particle.direction * time / CONFIG.loopSeconds * particle.speed + 1) % 1;
+          const lane = particle.lane - 2;
+          const p = infinityLanePoint(u, time, lane);
+          const q = infinityLanePoint((u - particle.direction * 0.012 + 1) % 1, time, lane);
+          const pulse = 0.55 + 0.45 * Math.sin(time * 2.8 + particle.phase * 6.283);
+          const color = particle.warm ? [255, 210, 122] : [255, 170, 248];
+          const radius = scaled(particle.radius) * (0.78 + pulse * 0.66);
+
+          ctx.strokeStyle = rgba(color, 0.16 + pulse * 0.3);
+          ctx.lineWidth = radius * 1.05;
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.moveTo(q.x, q.y);
+          ctx.lineTo(p.x, p.y);
+          ctx.stroke();
+
+          const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 7);
+          glow.addColorStop(0, rgba([255, 255, 235], 0.74 * pulse));
+          glow.addColorStop(0.26, rgba(color, 0.36 * pulse));
+          glow.addColorStop(1, rgba(color, 0));
+          ctx.fillStyle = glow;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, radius * 7, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function drawForegroundSparks(time) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        for (const spark of foreground_sparks) {
+          const x = spark.x * viewport.width + Math.sin(time * 0.19 + spark.phase * 6.283) * scaled(10);
+          const y = spark.y * viewport.height + Math.cos(time * 0.13 + spark.phase * 8.1) * scaled(8);
+          const pulse = 0.5 + 0.5 * Math.sin(time * spark.speed + spark.phase * 6.283);
+          const radius = scaled(spark.r) * (0.7 + pulse * 1.25);
+          ctx.fillStyle = `rgba(255, 245, 210, ${spark.alpha * pulse})`;
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function drawVignette(time) {
+        ctx.save();
+        ctx.globalCompositeOperation = "source-over";
+        const vignette = ctx.createRadialGradient(
+          viewport.width / 2,
+          viewport.height * 0.5,
+          viewport.height * 0.22,
+          viewport.width / 2,
+          viewport.height * 0.5,
+          viewport.width * 0.62
+        );
+        vignette.addColorStop(0, "rgba(0, 0, 0, 0)");
+        vignette.addColorStop(0.72, "rgba(0, 0, 0, 0.08)");
+        vignette.addColorStop(1, `rgba(0, 0, 0, ${CONFIG.background.centerVignette})`);
+        ctx.fillStyle = vignette;
+        ctx.fillRect(0, 0, viewport.width, viewport.height);
+
+        const scan = ctx.createLinearGradient(0, 0, 0, viewport.height);
+        scan.addColorStop(0, "rgba(255,255,255,0.025)");
+        scan.addColorStop(0.5, "rgba(255,255,255,0)");
+        scan.addColorStop(1, "rgba(255,255,255,0.018)");
+        ctx.fillStyle = scan;
+        ctx.fillRect(0, 0, viewport.width, viewport.height);
+        ctx.restore();
+      }
+
+      function render(now) {
+        const dt = lastFrameTime ? Math.min(0.033, Math.max(0.001, (now - lastFrameTime) * 0.001)) : 0.016;
+        lastFrameTime = now;
+        const time = now * 0.001;
+        const physicsDt = dt * CONFIG.controls.timeScale;
+        currentSceneTime = time;
+        updateMainLinkParticles(physicsDt, time);
+        updateSparkParticles(physicsDt, time);
+        drawMainLinkTrails(dt);
+
+        clearBackground(time);
+
+        drawStarfield(time);
+        drawDustParticles(time);
+
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        ctx.drawImage(trailCanvas, 0, 0);
+        ctx.restore();
+
+        drawMainLinkParticles();
+        drawSources(time);
+        drawForegroundSparks(time);
+        drawVignette(time);
+
+        requestAnimationFrame(render);
+      }
+
+      seedScene();
+      setupControls();
+      resize();
+      window.addEventListener("resize", resize);
+      fullscreenToggle.addEventListener("click", toggleFullscreen);
+      overlayToggle.addEventListener("click", toggleTitleOverlay);
+      controlsToggle.addEventListener("click", () => setControlsHidden(true));
+      controlsRestore.addEventListener("click", () => setControlsHidden(false));
+      preset1Toggle.addEventListener("click", applyPreset1);
+      resetToggle.addEventListener("click", resetScene);
+      document.addEventListener("fullscreenchange", updateFullscreenButton);
+      requestAnimationFrame(render);
+    })();
+  </script>
+</body>
+</html>
