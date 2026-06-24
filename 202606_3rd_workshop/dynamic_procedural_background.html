@@ -325,6 +325,33 @@
       accent-color: #ffd24f;
     }
 
+    .toggle-row {
+      display: grid;
+      grid-template-columns: minmax(108px, 1fr) 132px 42px;
+      gap: 10px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .toggle-row label {
+      color: rgba(255, 255, 255, 0.78);
+      white-space: nowrap;
+    }
+
+    .toggle-row input[type="checkbox"] {
+      justify-self: start;
+      width: 18px;
+      height: 18px;
+      accent-color: #ffd24f;
+      cursor: pointer;
+    }
+
+    .toggle-row output {
+      color: rgba(255, 228, 166, 0.92);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
     .meter-row {
       display: grid;
       grid-template-columns: minmax(108px, 1fr) 132px 42px;
@@ -505,6 +532,11 @@
       <input id="timeScaleControl" data-control="timeScale" type="range" min="0" max="100" step="1" value="100">
       <output for="timeScaleControl">50</output>
     </div>
+    <div class="toggle-row">
+      <label for="fastSubstepsToggle">Fast substeps</label>
+      <input id="fastSubstepsToggle" type="checkbox">
+      <output id="fastSubstepsStatus">Off</output>
+    </div>
     <div class="distribution-panel" aria-label="Particle speed distribution">
       <div class="distribution-header">
         <span>Speed distribution</span>
@@ -546,7 +578,8 @@
           saddleEnergyMargin: 0.04,
           initialSpeedWave: 0,
           initialSpeedPeriod: 18,
-          timeScale: 1
+          timeScale: 1,
+          fastSubsteps: false
         },
         background: {
           baseTop: "#060814",
@@ -637,6 +670,8 @@
       const controlPanel = document.querySelector(".control-panel");
       const initialSpeedMeterFill = document.getElementById("initialSpeedMeterFill");
       const initialSpeedMeterValue = document.getElementById("initialSpeedMeterValue");
+      const fastSubstepsToggle = document.getElementById("fastSubstepsToggle");
+      const fastSubstepsStatus = document.getElementById("fastSubstepsStatus");
       const speedDistributionCanvas = document.getElementById("speedDistributionCanvas");
       const speedDistributionCtx = speedDistributionCanvas.getContext("2d", { alpha: true });
       const speedDistributionStats = document.getElementById("speedDistributionStats");
@@ -1823,6 +1858,11 @@
         if (!hidden) updateSpeedDistribution(currentSceneTime, true);
       }
 
+      function updateFastSubstepsToggle() {
+        CONFIG.controls.fastSubsteps = fastSubstepsToggle.checked;
+        fastSubstepsStatus.textContent = CONFIG.controls.fastSubsteps ? "On" : "Off";
+      }
+
       function hideControlsOnOutsideClick(event) {
         if (document.body.classList.contains("controls-hidden")) return;
         const target = event.target;
@@ -2281,7 +2321,9 @@
         lastFrameTime = now;
         const time = now * 0.001;
         const physicsDt = dt * CONFIG.controls.timeScale;
-        const physicsSteps = Math.max(1, Math.min(8, Math.ceil(CONFIG.controls.timeScale)));
+        const physicsSteps = CONFIG.controls.fastSubsteps
+          ? Math.max(1, Math.min(8, Math.ceil(CONFIG.controls.timeScale)))
+          : 1;
         const subPhysicsDt = physicsDt / physicsSteps;
         currentSceneTime = time;
         updateInitialSpeedMeter(time);
@@ -2318,6 +2360,7 @@
 
       seedScene();
       setupControls();
+      updateFastSubstepsToggle();
       resize();
       window.addEventListener("resize", resize);
       fullscreenToggle.addEventListener("click", toggleFullscreen);
@@ -2327,6 +2370,7 @@
       preset1Toggle.addEventListener("click", applyPreset1);
       restartToggle.addEventListener("click", restartOrbit);
       resetToggle.addEventListener("click", resetScene);
+      fastSubstepsToggle.addEventListener("change", updateFastSubstepsToggle);
       document.addEventListener("pointerdown", hideControlsOnOutsideClick);
       document.addEventListener("fullscreenchange", updateFullscreenButton);
       requestAnimationFrame(render);
