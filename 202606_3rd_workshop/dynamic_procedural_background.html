@@ -476,6 +476,11 @@
       <output for="initialSpeedControl">50</output>
     </div>
     <div class="control-row">
+      <label for="particleCountControl">Particle count</label>
+      <input id="particleCountControl" data-control="particleCount" type="range" min="0" max="100" step="1" value="50">
+      <output for="particleCountControl">50</output>
+    </div>
+    <div class="control-row">
       <label for="saddleMarginControl">Saddle margin</label>
       <input id="saddleMarginControl" data-control="saddleEnergyMargin" type="range" min="0" max="100" step="1" value="4">
       <output for="saddleMarginControl">50</output>
@@ -497,7 +502,7 @@
     </div>
     <div class="control-row">
       <label for="timeScaleControl">Time speed</label>
-      <input id="timeScaleControl" data-control="timeScale" type="range" min="0" max="100" step="1" value="31">
+      <input id="timeScaleControl" data-control="timeScale" type="range" min="0" max="100" step="1" value="100">
       <output for="timeScaleControl">50</output>
     </div>
     <div class="distribution-panel" aria-label="Particle speed distribution">
@@ -537,6 +542,7 @@
           bhDistanceWave: 0,
           bhDistancePeriod: 20,
           initialSpeed: 104,
+          particleCount: 1300,
           saddleEnergyMargin: 0.04,
           initialSpeedWave: 0,
           initialSpeedPeriod: 18,
@@ -657,6 +663,7 @@
         bhDistanceWave: { min: 0, mid: 0, max: 1 },
         bhDistancePeriod: { min: 4, mid: 60, max: 600 },
         initialSpeed: { min: 40, mid: 104, max: 900 },
+        particleCount: { min: 120, mid: 1300, max: 3200 },
         saddleEnergyMargin: { min: 0, mid: 0.25, max: 0.8 },
         initialSpeedWave: { min: 0, mid: 0, max: 0.7 },
         initialSpeedPeriod: { min: 3, mid: 60, max: 600 },
@@ -675,10 +682,11 @@
         bhDistanceWave: 0,
         bhDistancePeriod: 50,
         initialSpeed: 50,
+        particleCount: 50,
         saddleEnergyMargin: 4,
         initialSpeedWave: 0,
         initialSpeedPeriod: 50,
-        timeScale: 31
+        timeScale: 100
       };
       const RESET_CONTROL_VALUES = {
         particleSize: 50,
@@ -693,6 +701,7 @@
         bhDistanceWave: 50,
         bhDistancePeriod: 50,
         initialSpeed: 50,
+        particleCount: 50,
         saddleEnergyMargin: 50,
         initialSpeedWave: 50,
         initialSpeedPeriod: 50,
@@ -916,7 +925,8 @@
         mainLinkParticles.length = 0;
         sparkParticles.length = 0;
 
-        for (let i = 0; i < CONFIG.transfer.mainCount; i += 1) {
+        const mainCount = Math.max(1, Math.round(CONFIG.controls.particleCount));
+        for (let i = 0; i < mainCount; i += 1) {
           const fromSide = i % 2 === 0 ? "left" : "right";
           const p = {};
           resetTransferParticle(p, fromSide, random());
@@ -1531,6 +1541,9 @@
             output.textContent = String(Math.round(uiValue));
             if ((key === "bhDistance" || key === "bhDistanceWave" || key === "bhDistancePeriod") && sources.left && sources.right) {
               refreshSourcesForTime(currentSceneTime, true);
+            }
+            if (key === "particleCount" && sources.left && sources.right) {
+              restartOrbit();
             }
             updateInitialSpeedMeter(currentSceneTime);
           };
@@ -2230,13 +2243,21 @@
         lastFrameTime = now;
         const time = now * 0.001;
         const physicsDt = dt * CONFIG.controls.timeScale;
+        const physicsSteps = Math.max(1, Math.min(8, Math.ceil(CONFIG.controls.timeScale)));
+        const subPhysicsDt = physicsDt / physicsSteps;
         currentSceneTime = time;
-        refreshSourcesForTime(time);
         updateInitialSpeedMeter(time);
         updateSpeedDistribution(time);
-        updateMainLinkParticles(physicsDt, time);
-        updateSparkParticles(physicsDt, time);
-        drawMainLinkTrails(physicsDt);
+        for (let i = 0; i < physicsSteps; i += 1) {
+          const subTime = time - physicsDt + subPhysicsDt * (i + 1);
+          currentSceneTime = subTime;
+          refreshSourcesForTime(subTime);
+          updateMainLinkParticles(subPhysicsDt, subTime);
+          updateSparkParticles(subPhysicsDt, subTime);
+          drawMainLinkTrails(subPhysicsDt);
+        }
+        currentSceneTime = time;
+        refreshSourcesForTime(time);
 
         clearBackground(time);
 
