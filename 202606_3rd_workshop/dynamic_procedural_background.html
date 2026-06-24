@@ -368,7 +368,7 @@
       </button>
       <button id="overlayToggle" class="overlay-toggle" type="button" aria-pressed="true">Hide title</button>
       <button id="controlsToggle" class="controls-toggle" type="button" aria-pressed="false">Hide controls</button>
-      <button id="preset1Toggle" class="preset-toggle" type="button">Preset 1</button>
+      <button id="preset1Toggle" class="preset-toggle" type="button">Preset</button>
       <button id="restartToggle" class="restart-toggle" type="button">Restart</button>
       <button id="resetToggle" class="reset-toggle" type="button">Reset</button>
     </div>
@@ -417,12 +417,12 @@
     </div>
     <div class="control-row">
       <label for="bhDistanceControl">BH distance</label>
-      <input id="bhDistanceControl" data-control="bhDistance" type="range" min="0" max="100" step="1" value="50">
+      <input id="bhDistanceControl" data-control="bhDistance" type="range" min="0" max="100" step="1" value="80">
       <output for="bhDistanceControl">50</output>
     </div>
     <div class="control-row">
       <label for="bhDistanceWaveControl">BH distance wave</label>
-      <input id="bhDistanceWaveControl" data-control="bhDistanceWave" type="range" min="0" max="100" step="1" value="50">
+      <input id="bhDistanceWaveControl" data-control="bhDistanceWave" type="range" min="0" max="100" step="1" value="0">
       <output for="bhDistanceWaveControl">50</output>
     </div>
     <div class="control-row">
@@ -437,7 +437,7 @@
     </div>
     <div class="control-row">
       <label for="initialSpeedWaveControl">Speed wave</label>
-      <input id="initialSpeedWaveControl" data-control="initialSpeedWave" type="range" min="0" max="100" step="1" value="50">
+      <input id="initialSpeedWaveControl" data-control="initialSpeedWave" type="range" min="0" max="100" step="1" value="0">
       <output for="initialSpeedWaveControl">50</output>
     </div>
     <div class="control-row">
@@ -589,8 +589,8 @@
         trailThinness: { min: 0.15, mid: 1, max: 8 },
         trailLifetime: { min: 0.1, mid: 1, max: 12 },
         bhGravity: { min: 0.05, mid: 1, max: 8 },
-        bhDistance: { min: 0.2, mid: 0.44, max: 0.76 },
-        bhDistanceWave: { min: 0, mid: 0, max: 0.24 },
+        bhDistance: { min: 0, mid: 0.5, max: 1 },
+        bhDistanceWave: { min: 0, mid: 0, max: 1 },
         bhDistancePeriod: { min: 4, mid: 60, max: 600 },
         initialSpeed: { min: 40, mid: 104, max: 260 },
         initialSpeedWave: { min: 0, mid: 0, max: 0.7 },
@@ -606,11 +606,11 @@
         trailThinness: 56,
         trailLifetime: 100,
         bhGravity: 50,
-        bhDistance: 50,
-        bhDistanceWave: 50,
+        bhDistance: 80,
+        bhDistanceWave: 0,
         bhDistancePeriod: 50,
         initialSpeed: 50,
-        initialSpeedWave: 50,
+        initialSpeedWave: 0,
         initialSpeedPeriod: 50,
         timeScale: 31
       };
@@ -695,6 +695,14 @@
         return viewport.offsetY + y * CONFIG.designHeight * viewport.scale;
       }
 
+      function simToScreenX(x) {
+        return viewport.offsetX + x * viewport.scale;
+      }
+
+      function simToScreenY(y) {
+        return viewport.offsetY + y * viewport.scale;
+      }
+
       function scaled(value) {
         return value * viewport.scale;
       }
@@ -702,8 +710,12 @@
       function effectiveBhDistance(time = currentSceneTime) {
         const period = Math.max(0.1, CONFIG.controls.bhDistancePeriod);
         const oscillation = Math.sin((time / period) * Math.PI * 2);
-        const distance = CONFIG.controls.bhDistance + CONFIG.controls.bhDistanceWave * oscillation;
-        return Math.max(0.12, Math.min(0.88, distance));
+        const minDistance = 0;
+        const maxDistance = 1;
+        const center = Math.max(minDistance, Math.min(maxDistance, CONFIG.controls.bhDistance));
+        const maxWave = Math.max(0, Math.min(center - minDistance, maxDistance - center));
+        const waveAmplitude = Math.min(CONFIG.controls.bhDistanceWave, maxWave);
+        return center + waveAmplitude * oscillation;
       }
 
       function effectiveInitialSpeed(time = currentSceneTime) {
@@ -727,8 +739,8 @@
         const liveSource = side === "left" ? sources.left : sources.right;
         if (liveSource) {
           return {
-            x: liveSource.x,
-            y: liveSource.y
+            x: simToScreenX(liveSource.x),
+            y: simToScreenY(liveSource.y)
           };
         }
         const position = sourceNormalizedPosition(side);
@@ -746,12 +758,12 @@
         const rightPosition = sourceNormalizedPosition("right", time);
         sources.left = {
           side: "left",
-          x: toScreenX(leftPosition.x),
-          y: toScreenY(leftPosition.y),
-          mass: CONFIG.transfer.sourceLeft.mass * viewport.scale,
-          softening: scaled(CONFIG.transfer.sourceLeft.softening),
-          captureRadius: scaled(CONFIG.transfer.sourceLeft.captureRadius),
-          emitRadius: scaled(CONFIG.transfer.sourceLeft.emitRadius),
+          x: leftPosition.x * CONFIG.designWidth,
+          y: leftPosition.y * CONFIG.designHeight,
+          mass: CONFIG.transfer.sourceLeft.mass,
+          softening: CONFIG.transfer.sourceLeft.softening,
+          captureRadius: CONFIG.transfer.sourceLeft.captureRadius,
+          emitRadius: CONFIG.transfer.sourceLeft.emitRadius,
           color: leftNode.color,
           hotColor: leftNode.hotColor,
           phase: leftNode.phase,
@@ -759,12 +771,12 @@
         };
         sources.right = {
           side: "right",
-          x: toScreenX(rightPosition.x),
-          y: toScreenY(rightPosition.y),
-          mass: CONFIG.transfer.sourceRight.mass * viewport.scale,
-          softening: scaled(CONFIG.transfer.sourceRight.softening),
-          captureRadius: scaled(CONFIG.transfer.sourceRight.captureRadius),
-          emitRadius: scaled(CONFIG.transfer.sourceRight.emitRadius),
+          x: rightPosition.x * CONFIG.designWidth,
+          y: rightPosition.y * CONFIG.designHeight,
+          mass: CONFIG.transfer.sourceRight.mass,
+          softening: CONFIG.transfer.sourceRight.softening,
+          captureRadius: CONFIG.transfer.sourceRight.captureRadius,
+          emitRadius: CONFIG.transfer.sourceRight.emitRadius,
           color: rightNode.color,
           hotColor: rightNode.hotColor,
           phase: rightNode.phase,
@@ -799,6 +811,15 @@
         const dx = right.x - left.x;
         const dy = right.y - left.y;
         const distance = Math.max(1e-9, Math.hypot(dx, dy));
+        if (distance < 1e-6 || distance < left.captureRadius + right.captureRadius) {
+          const x = (left.x + right.x) * 0.5;
+          const y = (left.y + right.y) * 0.5;
+          return {
+            x,
+            y,
+            energy: potentialAt(x, y)
+          };
+        }
         const ux = dx / distance;
         const uy = dy / distance;
         let lo = Math.max(1e-6, left.captureRadius / distance);
@@ -848,7 +869,7 @@
         const tries = CONFIG.transfer.boundOnly ? CONFIG.transfer.boundMaxTries : 1;
         const bounds = simulationBounds();
         for (let i = 0; i < tries; i += 1) {
-          const speed = scaled(effectiveInitialSpeed(currentSceneTime));
+          const speed = effectiveInitialSpeed(currentSceneTime);
           const angle = random() * Math.PI * 2;
           const x = lerp(bounds.left, bounds.right, random());
           const y = lerp(bounds.top, bounds.bottom, random());
@@ -882,13 +903,13 @@
         p.lastSource = fromSide || (random() < 0.5 ? "left" : "right");
         p.targetSource = random() < 0.5 ? "left" : "right";
         p.phase = random() * Math.PI * 2;
-        p.size = scaled(0.28 + Math.pow(random(), 1.35) * 0.82);
+        p.size = 0.28 + Math.pow(random(), 1.35) * 0.82;
       }
 
       function simulationBounds() {
-        const side = Math.max(viewport.width, viewport.height);
-        const cx = viewport.width * 0.5;
-        const cy = viewport.height * 0.5;
+        const side = Math.max(CONFIG.designWidth, CONFIG.designHeight);
+        const cx = CONFIG.designWidth * 0.5;
+        const cy = CONFIG.designHeight * 0.5;
         return {
           left: cx - side * 0.5,
           right: cx + side * 0.5,
@@ -914,8 +935,8 @@
 
         const baseSpeed = Math.max(1e-9, Math.hypot(chosen.vx0, chosen.vy0));
         const baseAngle = Math.atan2(chosen.vy0, chosen.vx0);
-        let x = chosen.x0 + scaled((random() - 0.5) * CONFIG.transfer.clonePositionJitter);
-        let y = chosen.y0 + scaled((random() - 0.5) * CONFIG.transfer.clonePositionJitter);
+        let x = chosen.x0 + (random() - 0.5) * CONFIG.transfer.clonePositionJitter;
+        let y = chosen.y0 + (random() - 0.5) * CONFIG.transfer.clonePositionJitter;
         let angle = baseAngle + (random() - 0.5) * CONFIG.transfer.cloneVelocityAngleJitter;
         let speed = baseSpeed;
         let vx = Math.cos(angle) * speed;
@@ -990,11 +1011,11 @@
         p.age = ageOffset * (0.8 + random() * 1.2);
         p.life = 0.65 + random() * 1.75;
         p.angle = random() * Math.PI * 2;
-        p.radius = scaled(34 + random() * 92);
-        p.radiusDrift = scaled((random() - 0.38) * 22);
+        p.radius = 34 + random() * 92;
+        p.radiusDrift = (random() - 0.38) * 22;
         p.angularSpeed = (side === "left" ? 1 : -1) * (1.6 + random() * 3.4);
         p.phase = random() * Math.PI * 2;
-        p.size = scaled(0.42 + random() * 1.4);
+        p.size = 0.42 + random() * 1.4;
         p.color = side === "left"
           ? [255, Math.round(150 + random() * 78), Math.round(54 + random() * 58)]
           : [Math.round(182 + random() * 48), Math.round(104 + random() * 64), 255];
@@ -1004,21 +1025,21 @@
 
       function getInfinityGuidePoint(u, lane = 0, time = currentSceneTime) {
         const t = ((u % 1) + 1) % 1 * Math.PI * 2;
-        const cx = viewport.width / 2;
-        const cy = toScreenY(0.515);
-        const a = scaled(415);
-        const b = scaled(214);
+        const cx = CONFIG.designWidth / 2;
+        const cy = CONFIG.designHeight * 0.515;
+        const a = 415;
+        const b = 214;
         const x = cx + Math.sin(t) * a;
         const y = cy + Math.sin(t * 2) * b * 0.5;
-        const wobbleX = Math.sin(time * 0.34 + t * 2.1 + lane * 0.43) * scaled(2.8);
-        const wobbleY = Math.cos(time * 0.29 + t * 1.6 - lane * 0.37) * scaled(2.4);
+        const wobbleX = Math.sin(time * 0.34 + t * 2.1 + lane * 0.43) * 2.8;
+        const wobbleY = Math.cos(time * 0.29 + t * 1.6 - lane * 0.37) * 2.4;
         const aheadT = t + 0.004 * Math.PI * 2;
         const dx = Math.sin(aheadT) * a - Math.sin(t) * a;
         const dy = Math.sin(aheadT * 2) * b * 0.5 - Math.sin(t * 2) * b * 0.5;
         const length = Math.max(0.001, Math.hypot(dx, dy));
         const nx = -dy / length;
         const ny = dx / length;
-        const laneOffset = scaled(lane * 5.8 + Math.sin(time * 0.22 + t * 3.0 + lane) * 1.5);
+        const laneOffset = lane * 5.8 + Math.sin(time * 0.22 + t * 3.0 + lane) * 1.5;
         return {
           x: x + nx * laneOffset + wobbleX,
           y: y + ny * laneOffset + wobbleY
@@ -1046,7 +1067,7 @@
         const normalX = dx - along * tangent.x;
         const normalY = dy - along * tangent.y;
         const guideStrength = CONFIG.physics.guideStrength * (1.1 + 0.22 * Math.sin(p.phase));
-        const drive = scaled(72 + 42 * p.speedU / CONFIG.transfer.mainSpeedMax);
+        const drive = 72 + 42 * p.speedU / CONFIG.transfer.mainSpeedMax;
         return {
           x: normalX * guideStrength + tangent.x * drive * p.direction,
           y: normalY * guideStrength + tangent.y * drive * p.direction
@@ -1094,7 +1115,7 @@
       }
 
       function updateMainLinkParticles(dt, time) {
-        const margin = scaled(12);
+        const margin = 12;
         const bounds = simulationBounds();
 
         sources.left.pulse *= Math.pow(0.06, dt);
@@ -1123,7 +1144,7 @@
           }
           const source = p.side === "left" ? sources.left : sources.right;
           const lifeT = Math.max(0, Math.min(1, p.age / p.life));
-          const localRadius = p.radius + p.radiusDrift * lifeT + Math.sin(time * 2.1 + p.phase) * scaled(5);
+          const localRadius = p.radius + p.radiusDrift * lifeT + Math.sin(time * 2.1 + p.phase) * 5;
           const angle = p.angle + p.angularSpeed * p.age + Math.sin(time * 0.7 + p.phase) * 0.18;
           const squash = 0.54 + 0.16 * Math.sin(p.phase + time * 0.44);
           p.x = source.x + Math.cos(angle) * localRadius;
@@ -1132,7 +1153,7 @@
       }
 
       function transferParticleColor(p, speed) {
-        const t = Math.max(0, Math.min(1, p.x / viewport.width));
+        const t = Math.max(0, Math.min(1, p.x / CONFIG.designWidth));
         const left = [255, 130, 42];
         const middle = [255, 206, 238];
         const right = [178, 98, 255];
@@ -1147,7 +1168,7 @@
               lerp(middle[1], right[1], (t - 0.5) * 2),
               lerp(middle[2], right[2], (t - 0.5) * 2)
             ];
-        const boost = Math.max(0, Math.min(1, speed / scaled(720)));
+        const boost = Math.max(0, Math.min(1, speed / 720));
         const speedBrightness = effectiveTrailSpeedBrightness();
         const baseBrightness = effectiveTrailBaseBrightness();
         return {
@@ -1238,21 +1259,25 @@
           const speed = Math.hypot(p.vx, p.vy);
           const style = transferParticleColor(p, speed);
           const survival = survivorGlow(p);
-          const width = ((scaled(CONFIG.transfer.trailWidth) + Math.min(scaled(0.62), speed / scaled(620))) * survival.width) / CONFIG.controls.trailThinness;
+          const x0 = simToScreenX(p.prevX);
+          const y0 = simToScreenY(p.prevY);
+          const x1 = simToScreenX(p.x);
+          const y1 = simToScreenY(p.y);
+          const width = (scaled(CONFIG.transfer.trailWidth + Math.min(0.62, speed / 620)) * survival.width) / CONFIG.controls.trailThinness;
           const alpha = Math.min(0.95, style.alpha * survival.alpha * CONFIG.controls.trailBrightness);
 
           currentBucketCtx.strokeStyle = rgba(style.color, alpha);
           currentBucketCtx.lineWidth = width;
           currentBucketCtx.beginPath();
-          currentBucketCtx.moveTo(p.prevX, p.prevY);
-          currentBucketCtx.lineTo(p.x, p.y);
+          currentBucketCtx.moveTo(x0, y0);
+          currentBucketCtx.lineTo(x1, y1);
           currentBucketCtx.stroke();
 
           currentBucketCtx.strokeStyle = rgba([255, 238, 248], alpha * 0.82);
           currentBucketCtx.lineWidth = Math.max(scaled(0.14), width * 0.34);
           currentBucketCtx.beginPath();
-          currentBucketCtx.moveTo(p.prevX, p.prevY);
-          currentBucketCtx.lineTo(p.x, p.y);
+          currentBucketCtx.moveTo(x0, y0);
+          currentBucketCtx.lineTo(x1, y1);
           currentBucketCtx.stroke();
         }
         currentBucketCtx.restore();
@@ -1282,19 +1307,21 @@
           const speed = Math.hypot(p.vx, p.vy);
           const style = transferParticleColor(p, speed);
           const survival = starAgeGlow(p);
-          const radius = p.size * CONFIG.controls.particleSize * (0.72 + Math.min(0.75, speed / scaled(620))) * Math.min(1.42, survival.width);
-          const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 6);
+          const x = simToScreenX(p.x);
+          const y = simToScreenY(p.y);
+          const radius = scaled(p.size * CONFIG.controls.particleSize * (0.72 + Math.min(0.75, speed / 620)) * Math.min(1.42, survival.width));
+          const glow = ctx.createRadialGradient(x, y, 0, x, y, radius * 6);
           glow.addColorStop(0, rgba([255, 248, 232], Math.min(0.48, 0.28 * survival.alpha)));
           glow.addColorStop(0.34, rgba(style.color, Math.min(0.34, 0.18 * survival.alpha)));
           glow.addColorStop(1, rgba(style.color, 0));
           ctx.fillStyle = glow;
           ctx.beginPath();
-          ctx.arc(p.x, p.y, radius * 6, 0, Math.PI * 2);
+          ctx.arc(x, y, radius * 6, 0, Math.PI * 2);
           ctx.fill();
 
           ctx.fillStyle = rgba([255, 248, 232], Math.min(0.38, 0.22 * survival.alpha));
           ctx.beginPath();
-          ctx.arc(p.x, p.y, Math.max(scaled(0.35), radius * 0.38), 0, Math.PI * 2);
+          ctx.arc(x, y, Math.max(scaled(0.35), radius * 0.38), 0, Math.PI * 2);
           ctx.fill();
         }
         ctx.restore();
@@ -1306,14 +1333,16 @@
         for (const p of sparkParticles) {
           const lifeT = Math.max(0, Math.min(1, p.age / p.life));
           const fade = Math.sin(lifeT * Math.PI);
-          const radius = p.size * CONFIG.controls.particleSize * (0.7 + fade * 0.7);
-          const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 7);
+          const x = simToScreenX(p.x);
+          const y = simToScreenY(p.y);
+          const radius = scaled(p.size * CONFIG.controls.particleSize * (0.7 + fade * 0.7));
+          const glow = ctx.createRadialGradient(x, y, 0, x, y, radius * 7);
           glow.addColorStop(0, rgba([255, 246, 226], 0.26 * fade));
           glow.addColorStop(0.33, rgba(p.color, 0.24 * fade));
           glow.addColorStop(1, rgba(p.color, 0));
           ctx.fillStyle = glow;
           ctx.beginPath();
-          ctx.arc(p.x, p.y, radius * 7, 0, Math.PI * 2);
+          ctx.arc(x, y, radius * 7, 0, Math.PI * 2);
           ctx.fill();
         }
         ctx.restore();
