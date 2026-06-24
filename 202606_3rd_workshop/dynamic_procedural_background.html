@@ -354,6 +354,46 @@
       transition: width 100ms linear;
     }
 
+    .distribution-panel {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .distribution-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 6px;
+      color: rgba(255, 255, 255, 0.78);
+      font-weight: 700;
+    }
+
+    .distribution-stats {
+      color: rgba(255, 228, 166, 0.92);
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .speed-histogram {
+      width: 100%;
+      height: 76px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.22);
+    }
+
+    .energy-histogram {
+      width: 100%;
+      height: 86px;
+      margin-top: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.22);
+    }
+
   </style>
 </head>
 <body class="controls-hidden">
@@ -436,6 +476,11 @@
       <output for="initialSpeedControl">50</output>
     </div>
     <div class="control-row">
+      <label for="saddleMarginControl">Saddle margin</label>
+      <input id="saddleMarginControl" data-control="saddleEnergyMargin" type="range" min="0" max="100" step="1" value="4">
+      <output for="saddleMarginControl">50</output>
+    </div>
+    <div class="control-row">
       <label for="initialSpeedWaveControl">Speed wave</label>
       <input id="initialSpeedWaveControl" data-control="initialSpeedWave" type="range" min="0" max="100" step="1" value="0">
       <output for="initialSpeedWaveControl">50</output>
@@ -454,6 +499,18 @@
       <label for="timeScaleControl">Time speed</label>
       <input id="timeScaleControl" data-control="timeScale" type="range" min="0" max="100" step="1" value="31">
       <output for="timeScaleControl">50</output>
+    </div>
+    <div class="distribution-panel" aria-label="Particle speed distribution">
+      <div class="distribution-header">
+        <span>Speed distribution</span>
+        <output id="speedDistributionStats" class="distribution-stats">mean -- / max --</output>
+      </div>
+      <canvas id="speedDistributionCanvas" class="speed-histogram" width="520" height="76"></canvas>
+      <div class="distribution-header">
+        <span>Energy distribution</span>
+        <output id="energyDistributionStats" class="distribution-stats">mean -- / saddle --</output>
+      </div>
+      <canvas id="energyDistributionCanvas" class="energy-histogram" width="520" height="86"></canvas>
     </div>
   </section>
   <button id="controlsRestore" class="controls-restore" type="button">Show controls</button>
@@ -480,6 +537,7 @@
           bhDistanceWave: 0,
           bhDistancePeriod: 20,
           initialSpeed: 104,
+          saddleEnergyMargin: 0.04,
           initialSpeedWave: 0,
           initialSpeedPeriod: 18,
           timeScale: 1
@@ -533,7 +591,7 @@
           minTrailAge: 1.8,
           boundOnly: true,
           boundMaxTries: 1200,
-          useSaddleEnergyFloor: false,
+          useSaddleEnergyFloor: true,
           saddleEnergyMargin: 0.04,
           survivorCloneMinAge: 6,
           clonePositionJitter: 4.5,
@@ -573,6 +631,12 @@
       const controlPanel = document.querySelector(".control-panel");
       const initialSpeedMeterFill = document.getElementById("initialSpeedMeterFill");
       const initialSpeedMeterValue = document.getElementById("initialSpeedMeterValue");
+      const speedDistributionCanvas = document.getElementById("speedDistributionCanvas");
+      const speedDistributionCtx = speedDistributionCanvas.getContext("2d", { alpha: true });
+      const speedDistributionStats = document.getElementById("speedDistributionStats");
+      const energyDistributionCanvas = document.getElementById("energyDistributionCanvas");
+      const energyDistributionCtx = energyDistributionCanvas.getContext("2d", { alpha: true });
+      const energyDistributionStats = document.getElementById("energyDistributionStats");
       const controlInputs = Array.from(document.querySelectorAll("[data-control]"));
       const trailCanvas = document.createElement("canvas");
       const trailCtx = trailCanvas.getContext("2d", { alpha: true });
@@ -582,8 +646,8 @@
 
       const CONTROL_MAP = {
         particleSize: { min: 0.08, mid: 1, max: 5 },
-        trailBrightness: { min: 0.02, mid: 1, max: 12 },
-        trailSpeedBrightness: { min: 0, mid: 1, max: 12 },
+        trailBrightness: { min: 0.02, mid: 1, max: 18 },
+        trailSpeedBrightness: { min: 0, mid: 1, max: 18 },
         trailAgeBrightness: { min: 0, mid: 1, max: 12 },
         starAgeBrightness: { min: 0, mid: 1, max: 12 },
         trailThinness: { min: 0.15, mid: 1, max: 8 },
@@ -592,7 +656,8 @@
         bhDistance: { min: 0, mid: 0.5, max: 1 },
         bhDistanceWave: { min: 0, mid: 0, max: 1 },
         bhDistancePeriod: { min: 4, mid: 60, max: 600 },
-        initialSpeed: { min: 40, mid: 104, max: 260 },
+        initialSpeed: { min: 40, mid: 104, max: 900 },
+        saddleEnergyMargin: { min: 0, mid: 0.25, max: 0.8 },
         initialSpeedWave: { min: 0, mid: 0, max: 0.7 },
         initialSpeedPeriod: { min: 3, mid: 60, max: 600 },
         timeScale: { min: 0.05, mid: 1, max: 8 }
@@ -610,6 +675,7 @@
         bhDistanceWave: 0,
         bhDistancePeriod: 50,
         initialSpeed: 50,
+        saddleEnergyMargin: 4,
         initialSpeedWave: 0,
         initialSpeedPeriod: 50,
         timeScale: 31
@@ -627,6 +693,7 @@
         bhDistanceWave: 50,
         bhDistancePeriod: 50,
         initialSpeed: 50,
+        saddleEnergyMargin: 50,
         initialSpeedWave: 50,
         initialSpeedPeriod: 50,
         timeScale: 50
@@ -659,6 +726,7 @@
       let lastFrameTime = 0;
       let currentSceneTime = 0;
       let lastSourceDistance = NaN;
+      let lastSpeedDistributionUpdate = -Infinity;
 
       function mulberry32(seed) {
         return function random() {
@@ -1001,7 +1069,7 @@
       function isAcceptedInitialEnergy(energy) {
         if (energy >= 0) return false;
         if (!CONFIG.transfer.useSaddleEnergyFloor || !sources.saddle) return true;
-        const floor = sources.saddle.energy * (1 - CONFIG.transfer.saddleEnergyMargin);
+        const floor = sources.saddle.energy * (1 - CONFIG.controls.saddleEnergyMargin);
         return energy > floor;
       }
 
@@ -1169,29 +1237,10 @@
               lerp(middle[2], right[2], (t - 0.5) * 2)
             ];
         const boost = Math.max(0, Math.min(1, speed / 720));
-        const speedBrightness = effectiveTrailSpeedBrightness();
-        const baseBrightness = effectiveTrailBaseBrightness();
         return {
           color: color.map(Math.round),
-          alpha: 0.052 * baseBrightness + boost * 0.18 * speedBrightness
+          alpha: 0.052 + boost * 0.18 * CONFIG.controls.trailSpeedBrightness
         };
-      }
-
-      function timeSpeedBrightnessCompensation() {
-        return Math.max(0.34, Math.min(1, 1 / Math.sqrt(Math.max(0.05, CONFIG.controls.timeScale))));
-      }
-
-      function effectiveTrailSpeedBrightness() {
-        return CONFIG.controls.trailSpeedBrightness * timeSpeedBrightnessCompensation();
-      }
-
-      function effectiveTrailBaseBrightness() {
-        return lerp(1, timeSpeedBrightnessCompensation(), 0.6);
-      }
-
-      function effectiveTrailLifetimeScale() {
-        const timeScale = Math.max(0.05, CONFIG.controls.timeScale);
-        return CONFIG.controls.trailLifetime / Math.sqrt(timeScale);
       }
 
       function survivorGlow(p) {
@@ -1241,7 +1290,7 @@
         if (trailBuckets.length === 0) return;
 
         trailBucketElapsed += dt;
-        const lifetimeScale = effectiveTrailLifetimeScale();
+        const lifetimeScale = CONFIG.controls.trailLifetime;
         const bucketDuration = Math.max(0.016, CONFIG.transfer.trailBucketDuration * lifetimeScale);
         while (trailBucketElapsed >= bucketDuration) {
           trailBucketElapsed -= bucketDuration;
@@ -1508,6 +1557,209 @@
         initialSpeedMeterValue.textContent = String(Math.round(speed));
       }
 
+      function updateSpeedDistribution(time, force = false) {
+        if (!speedDistributionCanvas || !speedDistributionCtx || !speedDistributionStats) return;
+        if (document.body.classList.contains("controls-hidden")) return;
+        if (!force && time - lastSpeedDistributionUpdate < 0.2) return;
+        lastSpeedDistributionUpdate = time;
+
+        const speeds = [];
+        let sum = 0;
+        let maxSpeed = 0;
+        for (const p of mainLinkParticles) {
+          if (!p.active) continue;
+          const speed = Math.hypot(p.vx, p.vy);
+          speeds.push(speed);
+          sum += speed;
+          if (speed > maxSpeed) maxSpeed = speed;
+        }
+
+        const ctx2 = speedDistributionCtx;
+        const width = speedDistributionCanvas.width;
+        const height = speedDistributionCanvas.height;
+        ctx2.clearRect(0, 0, width, height);
+        ctx2.fillStyle = "rgba(0, 0, 0, 0.18)";
+        ctx2.fillRect(0, 0, width, height);
+
+        if (speeds.length === 0) {
+          speedDistributionStats.textContent = "mean -- / max --";
+          return;
+        }
+
+        const sorted = speeds.slice().sort((a, b) => a - b);
+        const mean = sum / speeds.length;
+        const p95 = sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.95))];
+        const speedMax = Math.max(120, Math.min(Math.max(maxSpeed, p95 * 1.25), p95 * 2.6 || maxSpeed || 120));
+        const bucketCount = 36;
+        const buckets = Array(bucketCount).fill(0);
+        let overflow = 0;
+        for (const speed of speeds) {
+          if (speed >= speedMax) {
+            overflow += 1;
+            buckets[bucketCount - 1] += 1;
+          } else {
+            const index = Math.max(0, Math.min(bucketCount - 1, Math.floor((speed / speedMax) * bucketCount)));
+            buckets[index] += 1;
+          }
+        }
+
+        const maxBucket = Math.max(1, ...buckets);
+        const padX = 8;
+        const padTop = 8;
+        const padBottom = 16;
+        const plotWidth = width - padX * 2;
+        const plotHeight = height - padTop - padBottom;
+
+        ctx2.strokeStyle = "rgba(255, 255, 255, 0.16)";
+        ctx2.lineWidth = 1;
+        ctx2.beginPath();
+        ctx2.moveTo(padX, height - padBottom + 0.5);
+        ctx2.lineTo(width - padX, height - padBottom + 0.5);
+        ctx2.stroke();
+
+        const barWidth = plotWidth / bucketCount;
+        const gradient = ctx2.createLinearGradient(padX, 0, width - padX, 0);
+        gradient.addColorStop(0, "rgba(255, 145, 56, 0.82)");
+        gradient.addColorStop(0.5, "rgba(255, 230, 180, 0.9)");
+        gradient.addColorStop(1, "rgba(190, 118, 255, 0.82)");
+        ctx2.fillStyle = gradient;
+        for (let i = 0; i < bucketCount; i += 1) {
+          const h = (buckets[i] / maxBucket) * plotHeight;
+          const x = padX + i * barWidth + 1;
+          const y = height - padBottom - h;
+          ctx2.fillRect(x, y, Math.max(1, barWidth - 2), h);
+        }
+
+        ctx2.fillStyle = "rgba(255, 235, 190, 0.86)";
+        ctx2.font = "10px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";
+        ctx2.textBaseline = "alphabetic";
+        ctx2.fillText("0", padX, height - 4);
+        ctx2.textAlign = "right";
+        ctx2.fillText(String(Math.round(speedMax)), width - padX, height - 4);
+        ctx2.textAlign = "left";
+
+        const overflowText = overflow > 0 ? ` / clipped ${overflow}` : "";
+        speedDistributionStats.textContent = `mean ${Math.round(mean)} / max ${Math.round(maxSpeed)}${overflowText}`;
+        drawEnergyDistribution();
+      }
+
+      function drawEnergyDistribution() {
+        if (!energyDistributionCanvas || !energyDistributionCtx || !energyDistributionStats) return;
+        const ctx2 = energyDistributionCtx;
+        const width = energyDistributionCanvas.width;
+        const height = energyDistributionCanvas.height;
+        ctx2.clearRect(0, 0, width, height);
+        ctx2.fillStyle = "rgba(0, 0, 0, 0.18)";
+        ctx2.fillRect(0, 0, width, height);
+
+        const energies = [];
+        let sum = 0;
+        let minEnergy = Infinity;
+        let maxEnergy = -Infinity;
+        for (const p of mainLinkParticles) {
+          if (!p.active) continue;
+          const energy = specificOrbitalEnergy(p.x, p.y, p.vx, p.vy);
+          if (!Number.isFinite(energy)) continue;
+          energies.push(energy);
+          sum += energy;
+          if (energy < minEnergy) minEnergy = energy;
+          if (energy > maxEnergy) maxEnergy = energy;
+        }
+
+        if (energies.length === 0) {
+          energyDistributionStats.textContent = "mean -- / saddle --";
+          return;
+        }
+
+        const sorted = energies.slice().sort((a, b) => a - b);
+        const q02 = sorted[Math.floor(sorted.length * 0.02)];
+        const q98 = sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.98))];
+        const saddleEnergy = sources.saddle ? sources.saddle.energy : NaN;
+        const meanEnergy = sum / energies.length;
+        let rangeMin = Math.min(q02, Number.isFinite(saddleEnergy) ? saddleEnergy : q02, 0);
+        let rangeMax = Math.max(q98, Number.isFinite(saddleEnergy) ? saddleEnergy : q98, 0);
+        const padding = Math.max(1e-6, (rangeMax - rangeMin) * 0.08);
+        rangeMin -= padding;
+        rangeMax += padding;
+        if (rangeMax <= rangeMin) {
+          rangeMin -= 1;
+          rangeMax += 1;
+        }
+
+        const bucketCount = 42;
+        const buckets = Array(bucketCount).fill(0);
+        let clipped = 0;
+        for (const energy of energies) {
+          const t = (energy - rangeMin) / (rangeMax - rangeMin);
+          if (t < 0 || t > 1) {
+            clipped += 1;
+            continue;
+          }
+          const index = Math.max(0, Math.min(bucketCount - 1, Math.floor(t * bucketCount)));
+          buckets[index] += 1;
+        }
+
+        const padX = 8;
+        const padTop = 10;
+        const padBottom = 18;
+        const plotWidth = width - padX * 2;
+        const plotHeight = height - padTop - padBottom;
+        const baselineY = height - padBottom;
+        const maxBucket = Math.max(1, ...buckets);
+
+        ctx2.strokeStyle = "rgba(255, 255, 255, 0.16)";
+        ctx2.lineWidth = 1;
+        ctx2.beginPath();
+        ctx2.moveTo(padX, baselineY + 0.5);
+        ctx2.lineTo(width - padX, baselineY + 0.5);
+        ctx2.stroke();
+
+        const barWidth = plotWidth / bucketCount;
+        const gradient = ctx2.createLinearGradient(padX, 0, width - padX, 0);
+        gradient.addColorStop(0, "rgba(255, 118, 52, 0.8)");
+        gradient.addColorStop(0.55, "rgba(255, 232, 188, 0.9)");
+        gradient.addColorStop(1, "rgba(160, 118, 255, 0.82)");
+        ctx2.fillStyle = gradient;
+        for (let i = 0; i < bucketCount; i += 1) {
+          const h = (buckets[i] / maxBucket) * plotHeight;
+          ctx2.fillRect(padX + i * barWidth + 1, baselineY - h, Math.max(1, barWidth - 2), h);
+        }
+
+        function xForEnergy(energy) {
+          return padX + ((energy - rangeMin) / (rangeMax - rangeMin)) * plotWidth;
+        }
+
+        function marker(energy, label, color) {
+          if (!Number.isFinite(energy)) return;
+          const x = xForEnergy(energy);
+          if (x < padX || x > width - padX) return;
+          ctx2.strokeStyle = color;
+          ctx2.lineWidth = 1.4;
+          ctx2.beginPath();
+          ctx2.moveTo(x, padTop);
+          ctx2.lineTo(x, baselineY);
+          ctx2.stroke();
+          ctx2.fillStyle = color;
+          ctx2.font = "10px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";
+          ctx2.textBaseline = "top";
+          ctx2.fillText(label, Math.min(width - padX - 42, x + 4), padTop);
+        }
+
+        marker(saddleEnergy, "saddle", "rgba(255, 210, 79, 0.95)");
+        marker(0, "E=0", "rgba(255, 255, 255, 0.9)");
+
+        ctx2.fillStyle = "rgba(255, 235, 190, 0.86)";
+        ctx2.font = "10px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";
+        ctx2.textBaseline = "alphabetic";
+        ctx2.fillText(String(Math.round(rangeMin)), padX, height - 4);
+        ctx2.textAlign = "right";
+        ctx2.fillText(String(Math.round(rangeMax)), width - padX, height - 4);
+        ctx2.textAlign = "left";
+
+        const clippedText = clipped > 0 ? ` / clipped ${clipped}` : "";
+        energyDistributionStats.textContent = `mean ${Math.round(meanEnergy)} / saddle ${Math.round(saddleEnergy)}${clippedText}`;
+      }
+
       function toggleTitleOverlay() {
         const hidden = document.body.classList.toggle("overlay-hidden");
         overlayToggle.textContent = hidden ? "Show title" : "Hide title";
@@ -1517,6 +1769,7 @@
       function setControlsHidden(hidden) {
         document.body.classList.toggle("controls-hidden", hidden);
         controlsToggle.setAttribute("aria-pressed", String(hidden));
+        if (!hidden) updateSpeedDistribution(currentSceneTime, true);
       }
 
       function hideControlsOnOutsideClick(event) {
@@ -1980,9 +2233,10 @@
         currentSceneTime = time;
         refreshSourcesForTime(time);
         updateInitialSpeedMeter(time);
+        updateSpeedDistribution(time);
         updateMainLinkParticles(physicsDt, time);
         updateSparkParticles(physicsDt, time);
-        drawMainLinkTrails(dt);
+        drawMainLinkTrails(physicsDt);
 
         clearBackground(time);
 
