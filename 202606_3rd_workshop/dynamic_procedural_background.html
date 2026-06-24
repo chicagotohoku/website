@@ -925,7 +925,7 @@
         mainLinkParticles.length = 0;
         sparkParticles.length = 0;
 
-        const mainCount = Math.max(1, Math.round(CONFIG.controls.particleCount));
+        const mainCount = targetParticleCount();
         for (let i = 0; i < mainCount; i += 1) {
           const fromSide = i % 2 === 0 ? "left" : "right";
           const p = {};
@@ -938,6 +938,39 @@
           const p = {};
           resetSparkParticle(p, side, random());
           sparkParticles.push(p);
+        }
+      }
+
+      function targetParticleCount() {
+        return Math.max(1, Math.round(CONFIG.controls.particleCount));
+      }
+
+      function activeParticleCount() {
+        let count = 0;
+        for (const p of mainLinkParticles) {
+          if (p.active) count += 1;
+        }
+        return count;
+      }
+
+      function addParticleToTarget() {
+        let p = mainLinkParticles.find((particle) => !particle.active);
+        if (!p) {
+          p = {};
+          mainLinkParticles.push(p);
+        }
+        resetTransferParticle(p, mainLinkParticles.length % 2 === 0 ? "left" : "right", 0);
+        return p.active;
+      }
+
+      function reconcileParticleCount() {
+        const target = targetParticleCount();
+        let activeCount = activeParticleCount();
+        const addLimit = Math.min(32, Math.max(0, target - activeCount));
+        let attempts = 0;
+        while (activeCount < target && attempts < addLimit * 3) {
+          if (addParticleToTarget()) activeCount += 1;
+          attempts += 1;
         }
       }
 
@@ -1195,6 +1228,8 @@
       function updateMainLinkParticles(dt, time) {
         const margin = 12;
         const bounds = simulationBounds();
+        const target = targetParticleCount();
+        let activeCount = activeParticleCount();
 
         sources.left.pulse *= Math.pow(0.06, dt);
         sources.right.pulse *= Math.pow(0.06, dt);
@@ -1208,7 +1243,13 @@
           advanceParticleRK4(p, dt);
 
           if (p.x < bounds.left - margin || p.x > bounds.right + margin || p.y < bounds.top - margin || p.y > bounds.bottom + margin) {
-            cloneSurvivingOrbit(p);
+            if (activeCount > target) {
+              p.active = false;
+              activeCount -= 1;
+            } else {
+              cloneSurvivingOrbit(p);
+              if (!p.active) activeCount -= 1;
+            }
           }
         }
       }
@@ -1541,9 +1582,6 @@
             output.textContent = String(Math.round(uiValue));
             if ((key === "bhDistance" || key === "bhDistanceWave" || key === "bhDistancePeriod") && sources.left && sources.right) {
               refreshSourcesForTime(currentSceneTime, true);
-            }
-            if (key === "particleCount" && sources.left && sources.right) {
-              restartOrbit();
             }
             updateInitialSpeedMeter(currentSceneTime);
           };
@@ -2248,6 +2286,7 @@
         currentSceneTime = time;
         updateInitialSpeedMeter(time);
         updateSpeedDistribution(time);
+        reconcileParticleCount();
         for (let i = 0; i < physicsSteps; i += 1) {
           const subTime = time - physicsDt + subPhysicsDt * (i + 1);
           currentSceneTime = subTime;
