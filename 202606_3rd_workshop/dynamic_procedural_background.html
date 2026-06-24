@@ -61,7 +61,7 @@
 
     .panel-actions {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(6, minmax(0, 1fr));
       gap: 8px;
       margin-bottom: 12px;
     }
@@ -73,6 +73,7 @@
     .panel-actions .fullscreen-toggle,
     .panel-actions .controls-toggle,
     .panel-actions .preset-toggle,
+    .panel-actions .restart-toggle,
     .panel-actions .reset-toggle {
       width: 100%;
     }
@@ -111,6 +112,7 @@
     }
 
     .preset-toggle,
+    .restart-toggle,
     .reset-toggle {
       height: 34px;
       padding: 0 12px;
@@ -158,6 +160,7 @@
     .overlay-toggle:hover,
     .controls-toggle:hover,
     .preset-toggle:hover,
+    .restart-toggle:hover,
     .reset-toggle:hover,
     .workshop-control-link:hover,
     .controls-restore:hover {
@@ -169,6 +172,7 @@
     .overlay-toggle:focus-visible,
     .controls-toggle:focus-visible,
     .preset-toggle:focus-visible,
+    .restart-toggle:focus-visible,
     .reset-toggle:focus-visible,
     .workshop-control-link:focus-visible,
     .controls-restore:focus-visible {
@@ -274,7 +278,7 @@
       left: 18px;
       top: 18px;
       z-index: 10;
-      width: min(480px, calc(100vw - 36px));
+      width: min(560px, calc(100vw - 36px));
       max-height: calc(100vh - 36px);
       overflow: auto;
       padding: 14px 14px 12px;
@@ -321,6 +325,35 @@
       accent-color: #ffd24f;
     }
 
+    .meter-row {
+      display: grid;
+      grid-template-columns: minmax(108px, 1fr) 132px 42px;
+      gap: 10px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .meter-row span {
+      color: rgba(255, 255, 255, 0.78);
+      white-space: nowrap;
+    }
+
+    .live-meter {
+      width: 100%;
+      height: 7px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .live-meter-fill {
+      width: 50%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #ff9f3d, #ffd24f, #d68cff);
+      transition: width 100ms linear;
+    }
+
   </style>
 </head>
 <body class="controls-hidden">
@@ -336,6 +369,7 @@
       <button id="overlayToggle" class="overlay-toggle" type="button" aria-pressed="true">Hide title</button>
       <button id="controlsToggle" class="controls-toggle" type="button" aria-pressed="false">Hide controls</button>
       <button id="preset1Toggle" class="preset-toggle" type="button">Preset 1</button>
+      <button id="restartToggle" class="restart-toggle" type="button">Restart</button>
       <button id="resetToggle" class="reset-toggle" type="button">Reset</button>
     </div>
     <a class="workshop-control-link" href="https://chicagotohoku.github.io/website/202606_3rd_workshop/index.html">
@@ -387,6 +421,36 @@
       <output for="bhDistanceControl">50</output>
     </div>
     <div class="control-row">
+      <label for="bhDistanceWaveControl">BH distance wave</label>
+      <input id="bhDistanceWaveControl" data-control="bhDistanceWave" type="range" min="0" max="100" step="1" value="50">
+      <output for="bhDistanceWaveControl">50</output>
+    </div>
+    <div class="control-row">
+      <label for="bhDistancePeriodControl">BH wave period</label>
+      <input id="bhDistancePeriodControl" data-control="bhDistancePeriod" type="range" min="0" max="100" step="1" value="50">
+      <output for="bhDistancePeriodControl">50</output>
+    </div>
+    <div class="control-row">
+      <label for="initialSpeedControl">Initial speed</label>
+      <input id="initialSpeedControl" data-control="initialSpeed" type="range" min="0" max="100" step="1" value="50">
+      <output for="initialSpeedControl">50</output>
+    </div>
+    <div class="control-row">
+      <label for="initialSpeedWaveControl">Speed wave</label>
+      <input id="initialSpeedWaveControl" data-control="initialSpeedWave" type="range" min="0" max="100" step="1" value="50">
+      <output for="initialSpeedWaveControl">50</output>
+    </div>
+    <div class="control-row">
+      <label for="initialSpeedPeriodControl">Speed wave period</label>
+      <input id="initialSpeedPeriodControl" data-control="initialSpeedPeriod" type="range" min="0" max="100" step="1" value="50">
+      <output for="initialSpeedPeriodControl">50</output>
+    </div>
+    <div class="meter-row" aria-label="Current initial speed">
+      <span>Speed now</span>
+      <div class="live-meter" aria-hidden="true"><div id="initialSpeedMeterFill" class="live-meter-fill"></div></div>
+      <output id="initialSpeedMeterValue">104</output>
+    </div>
+    <div class="control-row">
       <label for="timeScaleControl">Time speed</label>
       <input id="timeScaleControl" data-control="timeScale" type="range" min="0" max="100" step="1" value="31">
       <output for="timeScaleControl">50</output>
@@ -413,6 +477,11 @@
           trailLifetime: 1,
           bhGravity: 1,
           bhDistance: 0.44,
+          bhDistanceWave: 0,
+          bhDistancePeriod: 20,
+          initialSpeed: 104,
+          initialSpeedWave: 0,
+          initialSpeedPeriod: 18,
           timeScale: 1
         },
         background: {
@@ -499,7 +568,11 @@
       const controlsToggle = document.getElementById("controlsToggle");
       const controlsRestore = document.getElementById("controlsRestore");
       const preset1Toggle = document.getElementById("preset1Toggle");
+      const restartToggle = document.getElementById("restartToggle");
       const resetToggle = document.getElementById("resetToggle");
+      const controlPanel = document.querySelector(".control-panel");
+      const initialSpeedMeterFill = document.getElementById("initialSpeedMeterFill");
+      const initialSpeedMeterValue = document.getElementById("initialSpeedMeterValue");
       const controlInputs = Array.from(document.querySelectorAll("[data-control]"));
       const trailCanvas = document.createElement("canvas");
       const trailCtx = trailCanvas.getContext("2d", { alpha: true });
@@ -517,6 +590,11 @@
         trailLifetime: { min: 0.1, mid: 1, max: 12 },
         bhGravity: { min: 0.05, mid: 1, max: 8 },
         bhDistance: { min: 0.2, mid: 0.44, max: 0.76 },
+        bhDistanceWave: { min: 0, mid: 0, max: 0.24 },
+        bhDistancePeriod: { min: 4, mid: 60, max: 600 },
+        initialSpeed: { min: 40, mid: 104, max: 260 },
+        initialSpeedWave: { min: 0, mid: 0, max: 0.7 },
+        initialSpeedPeriod: { min: 3, mid: 60, max: 600 },
         timeScale: { min: 0.05, mid: 1, max: 8 }
       };
       const PRESET_1_CONTROL_VALUES = {
@@ -529,6 +607,11 @@
         trailLifetime: 100,
         bhGravity: 50,
         bhDistance: 50,
+        bhDistanceWave: 50,
+        bhDistancePeriod: 50,
+        initialSpeed: 50,
+        initialSpeedWave: 50,
+        initialSpeedPeriod: 50,
         timeScale: 31
       };
       const RESET_CONTROL_VALUES = {
@@ -541,6 +624,11 @@
         trailLifetime: 50,
         bhGravity: 50,
         bhDistance: 50,
+        bhDistanceWave: 50,
+        bhDistancePeriod: 50,
+        initialSpeed: 50,
+        initialSpeedWave: 50,
+        initialSpeedPeriod: 50,
         timeScale: 50
       };
 
@@ -570,6 +658,7 @@
       };
       let lastFrameTime = 0;
       let currentSceneTime = 0;
+      let lastSourceDistance = NaN;
 
       function mulberry32(seed) {
         return function random() {
@@ -610,8 +699,22 @@
         return value * viewport.scale;
       }
 
-      function sourceNormalizedPosition(side) {
-        const distance = CONFIG.controls.bhDistance;
+      function effectiveBhDistance(time = currentSceneTime) {
+        const period = Math.max(0.1, CONFIG.controls.bhDistancePeriod);
+        const oscillation = Math.sin((time / period) * Math.PI * 2);
+        const distance = CONFIG.controls.bhDistance + CONFIG.controls.bhDistanceWave * oscillation;
+        return Math.max(0.12, Math.min(0.88, distance));
+      }
+
+      function effectiveInitialSpeed(time = currentSceneTime) {
+        const period = Math.max(0.1, CONFIG.controls.initialSpeedPeriod);
+        const oscillation = Math.sin((time / period) * Math.PI * 2);
+        const speed = CONFIG.controls.initialSpeed * (1 + CONFIG.controls.initialSpeedWave * oscillation);
+        return Math.max(12, speed);
+      }
+
+      function sourceNormalizedPosition(side, time = currentSceneTime) {
+        const distance = effectiveBhDistance(time);
         const x = side === "left" ? 0.5 - distance * 0.5 : 0.5 + distance * 0.5;
         return {
           x,
@@ -621,6 +724,13 @@
 
       function nodePosition(node) {
         const side = node === CONFIG.nodes.left ? "left" : "right";
+        const liveSource = side === "left" ? sources.left : sources.right;
+        if (liveSource) {
+          return {
+            x: liveSource.x,
+            y: liveSource.y
+          };
+        }
         const position = sourceNormalizedPosition(side);
         return {
           x: toScreenX(position.x),
@@ -628,11 +738,12 @@
         };
       }
 
-      function initSources() {
+      function initSources(time = currentSceneTime) {
         const leftNode = CONFIG.nodes.left;
         const rightNode = CONFIG.nodes.right;
-        const leftPosition = sourceNormalizedPosition("left");
-        const rightPosition = sourceNormalizedPosition("right");
+        const sourceDistance = effectiveBhDistance(time);
+        const leftPosition = sourceNormalizedPosition("left", time);
+        const rightPosition = sourceNormalizedPosition("right", time);
         sources.left = {
           side: "left",
           x: toScreenX(leftPosition.x),
@@ -660,6 +771,14 @@
           pulse: 0
         };
         sources.saddle = computeSaddlePoint();
+        lastSourceDistance = sourceDistance;
+      }
+
+      function refreshSourcesForTime(time, force = false) {
+        const sourceDistance = effectiveBhDistance(time);
+        if (force || !sources.left || !sources.right || Math.abs(sourceDistance - lastSourceDistance) > 0.0005) {
+          initSources(time);
+        }
       }
 
       function potentialAt(x, y) {
@@ -729,7 +848,7 @@
         const tries = CONFIG.transfer.boundOnly ? CONFIG.transfer.boundMaxTries : 1;
         const bounds = simulationBounds();
         for (let i = 0; i < tries; i += 1) {
-          const speed = scaled(CONFIG.transfer.initialSpeed);
+          const speed = scaled(effectiveInitialSpeed(currentSceneTime));
           const angle = random() * Math.PI * 2;
           const x = lerp(bounds.left, bounds.right, random());
           const y = lerp(bounds.top, bounds.bottom, random());
@@ -1312,7 +1431,7 @@
         viewport.offsetX = (viewport.width - CONFIG.designWidth * viewport.scale) / 2;
         viewport.offsetY = (viewport.height - CONFIG.designHeight * viewport.scale) / 2;
         resetTrailBuckets();
-        initSources();
+        refreshSourcesForTime(currentSceneTime, true);
         initTransferParticles();
       }
 
@@ -1332,9 +1451,10 @@
             const uiValue = Number(input.value);
             CONFIG.controls[key] = controlValueToInternal(key, uiValue);
             output.textContent = String(Math.round(uiValue));
-            if (key === "bhDistance" && sources.left && sources.right) {
-              initSources();
+            if ((key === "bhDistance" || key === "bhDistanceWave" || key === "bhDistancePeriod") && sources.left && sources.right) {
+              refreshSourcesForTime(currentSceneTime, true);
             }
+            updateInitialSpeedMeter(currentSceneTime);
           };
           input.addEventListener("input", updateValue);
           updateValue();
@@ -1349,6 +1469,16 @@
         return lerp(map.mid, map.max, (t - 0.5) / 0.5);
       }
 
+      function updateInitialSpeedMeter(time) {
+        if (!initialSpeedMeterFill || !initialSpeedMeterValue) return;
+        const speed = effectiveInitialSpeed(time);
+        const min = CONTROL_MAP.initialSpeed.min * (1 - CONTROL_MAP.initialSpeedWave.max);
+        const max = CONTROL_MAP.initialSpeed.max * (1 + CONTROL_MAP.initialSpeedWave.max);
+        const normalized = Math.max(0, Math.min(1, (speed - min) / Math.max(1e-9, max - min)));
+        initialSpeedMeterFill.style.width = `${Math.round(normalized * 100)}%`;
+        initialSpeedMeterValue.textContent = String(Math.round(speed));
+      }
+
       function toggleTitleOverlay() {
         const hidden = document.body.classList.toggle("overlay-hidden");
         overlayToggle.textContent = hidden ? "Show title" : "Hide title";
@@ -1360,13 +1490,24 @@
         controlsToggle.setAttribute("aria-pressed", String(hidden));
       }
 
+      function hideControlsOnOutsideClick(event) {
+        if (document.body.classList.contains("controls-hidden")) return;
+        const target = event.target;
+        if (controlPanel.contains(target) || controlsRestore.contains(target)) return;
+        setControlsHidden(true);
+      }
+
       function applyControlValues(values) {
         for (const input of controlInputs) {
           input.value = String(values[input.dataset.control] ?? 50);
           input.dispatchEvent(new Event("input", { bubbles: true }));
         }
+        restartOrbit();
+      }
+
+      function restartOrbit() {
         resetTrailBuckets();
-        initSources();
+        refreshSourcesForTime(currentSceneTime, true);
         initTransferParticles();
       }
 
@@ -1808,6 +1949,8 @@
         const time = now * 0.001;
         const physicsDt = dt * CONFIG.controls.timeScale;
         currentSceneTime = time;
+        refreshSourcesForTime(time);
+        updateInitialSpeedMeter(time);
         updateMainLinkParticles(physicsDt, time);
         updateSparkParticles(physicsDt, time);
         drawMainLinkTrails(dt);
@@ -1839,7 +1982,9 @@
       controlsToggle.addEventListener("click", () => setControlsHidden(true));
       controlsRestore.addEventListener("click", () => setControlsHidden(false));
       preset1Toggle.addEventListener("click", applyPreset1);
+      restartToggle.addEventListener("click", restartOrbit);
       resetToggle.addEventListener("click", resetScene);
+      document.addEventListener("pointerdown", hideControlsOnOutsideClick);
       document.addEventListener("fullscreenchange", updateFullscreenButton);
       requestAnimationFrame(render);
     })();
