@@ -774,6 +774,16 @@ li {
   margin: 0;
 }
 
+.photo-lightbox-trigger {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: zoom-in;
+}
+
 .photo-image {
   display: block;
   width: 100%;
@@ -784,6 +794,41 @@ li {
 
 .workshop-group-photo {
   max-width: 100%;
+}
+
+.photo-lightbox {
+  width: min(96vw, 1500px);
+  max-width: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.photo-lightbox::backdrop {
+  background: rgba(7, 9, 14, 0.84);
+}
+
+.photo-lightbox-image {
+  display: block;
+  width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #05070a;
+}
+
+.photo-lightbox-close {
+  position: fixed;
+  top: 18px;
+  right: 22px;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(7, 9, 14, 0.72);
+  color: #fff;
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
 }
 
 .speaker-grid {

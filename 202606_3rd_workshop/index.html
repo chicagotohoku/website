@@ -38,7 +38,9 @@
     <section class="section">
       <div class="panel">
         <figure class="photo-figure">
-          <img class="photo-image workshop-group-photo" src="group-photo.jpg" alt="Group photo from the 3rd Workshop on the Chicago-Tohoku Quantum Alliance">
+          <button class="photo-lightbox-trigger" type="button" aria-label="Open group photo in a larger view" aria-haspopup="dialog" data-lightbox-open>
+            <img class="photo-image workshop-group-photo" src="group-photo.jpg" alt="Group photo from the 3rd Workshop on the Chicago-Tohoku Quantum Alliance">
+          </button>
         </figure>
       </div>
     </section>
@@ -355,5 +357,25 @@
     </section>
 
   </main>
+  <dialog class="photo-lightbox" aria-label="Group photo larger view" data-lightbox>
+    <button class="photo-lightbox-close" type="button" aria-label="Close larger photo view" data-lightbox-close>&times;</button>
+    <img class="photo-lightbox-image" src="group-photo.jpg" alt="Group photo from the 3rd Workshop on the Chicago-Tohoku Quantum Alliance">
+  </dialog>
+  <script>
+    (() => {
+      const dialog = document.querySelector("[data-lightbox]");
+      const openButton = document.querySelector("[data-lightbox-open]");
+      const closeButton = document.querySelector("[data-lightbox-close]");
+      if (!dialog || !openButton || !closeButton) return;
+
+      openButton.addEventListener("click", () => {
+        if (typeof dialog.showModal === "function") dialog.showModal();
+      });
+      closeButton.addEventListener("click", () => dialog.close());
+      dialog.addEventListener("click", (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+    })();
+  </script>
 </body>
 </html>
