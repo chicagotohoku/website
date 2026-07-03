@@ -6,7 +6,7 @@
   <title>3rd Workshop on the Chicago-Tohoku Quantum Alliance</title>
   <meta name="description" content="Event page for the 3rd Workshop on the Chicago-Tohoku Quantum Alliance, scheduled for June 29&ndash;30, 2026 in Sendai.">
   <link rel="icon" type="image/svg+xml" href="../common/favicon.svg">
-  <link rel="stylesheet" href="../common/site.css?v=20260617-1">
+  <link rel="stylesheet" href="../common/site.css?v=20260703-1">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-HG8PH1RW45"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -38,9 +38,9 @@
     <section class="section">
       <div class="panel">
         <figure class="photo-figure">
-          <button class="photo-lightbox-trigger" type="button" aria-label="Open group photo in a larger view" aria-haspopup="dialog" data-lightbox-open>
+          <a class="photo-lightbox-trigger" href="group-photo.jpg" aria-label="Open group photo in a larger view" data-lightbox-open>
             <img class="photo-image workshop-group-photo" src="group-photo.jpg" alt="Group photo from the 3rd Workshop on the Chicago-Tohoku Quantum Alliance">
-          </button>
+          </a>
         </figure>
       </div>
     </section>
@@ -368,8 +368,10 @@
       const closeButton = document.querySelector("[data-lightbox-close]");
       if (!dialog || !openButton || !closeButton) return;
 
-      openButton.addEventListener("click", () => {
-        if (typeof dialog.showModal === "function") dialog.showModal();
+      openButton.addEventListener("click", (event) => {
+        if (typeof dialog.showModal !== "function") return;
+        event.preventDefault();
+        dialog.showModal();
       });
       closeButton.addEventListener("click", () => dialog.close());
       dialog.addEventListener("click", (event) => {
