@@ -6,7 +6,7 @@
   <title>3rd Workshop on the Chicago-Tohoku Quantum Alliance</title>
   <meta name="description" content="Event page for the 3rd Workshop on the Chicago-Tohoku Quantum Alliance, scheduled for June 29&ndash;30, 2026 in Sendai.">
   <link rel="icon" type="image/svg+xml" href="../common/favicon.svg">
-  <link rel="stylesheet" href="../common/site.css?v=20260703-1">
+  <link rel="stylesheet" href="../common/site.css?v=20260704-1">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-HG8PH1RW45"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -40,6 +40,9 @@
         <figure class="photo-figure">
           <a class="photo-lightbox-trigger" href="group-photo.jpg" aria-label="Open group photo in a larger view" data-lightbox-open>
             <img class="photo-image workshop-group-photo" src="group-photo.jpg" alt="Group photo from the 3rd Workshop on the Chicago-Tohoku Quantum Alliance">
+          </a>
+          <a class="photo-lightbox-trigger" href="group-photo-stairs.jpg" aria-label="Open second group photo in a larger view" data-lightbox-open>
+            <img class="photo-image workshop-group-photo" src="group-photo-stairs.jpg" alt="Second group photo from the 3rd Workshop on the Chicago-Tohoku Quantum Alliance">
           </a>
         </figure>
       </div>
@@ -359,19 +362,25 @@
   </main>
   <dialog class="photo-lightbox" aria-label="Group photo larger view" data-lightbox>
     <button class="photo-lightbox-close" type="button" aria-label="Close larger photo view" data-lightbox-close>&times;</button>
-    <img class="photo-lightbox-image" src="group-photo.jpg" alt="Group photo from the 3rd Workshop on the Chicago-Tohoku Quantum Alliance">
+    <img class="photo-lightbox-image" src="group-photo.jpg" alt="Group photo from the 3rd Workshop on the Chicago-Tohoku Quantum Alliance" data-lightbox-image>
   </dialog>
   <script>
     (() => {
       const dialog = document.querySelector("[data-lightbox]");
-      const openButton = document.querySelector("[data-lightbox-open]");
+      const openButtons = document.querySelectorAll("[data-lightbox-open]");
       const closeButton = document.querySelector("[data-lightbox-close]");
-      if (!dialog || !openButton || !closeButton) return;
+      const lightboxImage = document.querySelector("[data-lightbox-image]");
+      if (!dialog || !openButtons.length || !closeButton || !lightboxImage) return;
 
-      openButton.addEventListener("click", (event) => {
-        if (typeof dialog.showModal !== "function") return;
-        event.preventDefault();
-        dialog.showModal();
+      openButtons.forEach((openButton) => {
+        openButton.addEventListener("click", (event) => {
+          if (typeof dialog.showModal !== "function") return;
+          const image = openButton.querySelector("img");
+          event.preventDefault();
+          lightboxImage.src = openButton.href;
+          lightboxImage.alt = image ? image.alt : "Workshop photo";
+          dialog.showModal();
+        });
       });
       closeButton.addEventListener("click", () => dialog.close());
       dialog.addEventListener("click", (event) => {

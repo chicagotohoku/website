@@ -784,6 +784,10 @@ li {
   cursor: zoom-in;
 }
 
+.photo-lightbox-trigger + .photo-lightbox-trigger {
+  margin-top: 18px;
+}
+
 .photo-image {
   display: block;
   width: 100%;
