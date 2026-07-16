@@ -774,6 +774,22 @@ li {
   margin: 0;
 }
 
+.photo-figure figure {
+  margin: 0;
+}
+
+.photo-figure figure + figure {
+  margin-top: 18px;
+}
+
+.photo-figure figcaption {
+  max-width: 720px;
+  margin: 10px auto 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
 .photo-lightbox-trigger {
   display: block;
   width: 100%;
