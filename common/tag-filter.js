@@ -43,6 +43,43 @@ function getItemYear(item) {
   return (item.dataset.date || "").slice(0, 4);
 }
 
+function parseLocalDate(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+  if (!match) {
+    return NaN;
+  }
+  return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3])).getTime();
+}
+
+function getTodayStart() {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+}
+
+function routeArchiveItemsByDate() {
+  const futureList = document.querySelector("#events .archive-list");
+  const timelineList = document.querySelector("#past-events .archive-list");
+  if (!futureList || !timelineList) {
+    return;
+  }
+
+  const today = getTodayStart();
+  const timedItems = Array.from(
+    document.querySelectorAll("#events .archive-item[data-date], #past-events .archive-item[data-date]")
+  );
+
+  timedItems.forEach((item) => {
+    const eventEnd = parseLocalDate(item.dataset.endDate || item.dataset.date);
+    if (Number.isNaN(eventEnd)) {
+      return;
+    }
+    const targetList = eventEnd >= today ? futureList : timelineList;
+    if (item.parentElement !== targetList) {
+      targetList.appendChild(item);
+    }
+  });
+}
+
 function buildYearButtons() {
   if (!yearBar) {
     return;
@@ -195,6 +232,8 @@ function applySort(direction) {
       .forEach((item) => list.appendChild(item));
   });
 }
+
+routeArchiveItemsByDate();
 
 filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
