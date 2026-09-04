@@ -41,8 +41,13 @@ async function syncArchiveSources() {
 
         const fragment = document.createDocumentFragment();
         sourceLinks.forEach((link) => {
+          const sourceHref = link.getAttribute("href");
+          if (!sourceHref) {
+            return;
+          }
+
           const anchor = document.createElement("a");
-          anchor.href = link.href;
+          anchor.href = new URL(sourceHref, pageUrl).href;
           anchor.target = "_blank";
           anchor.rel = "noreferrer";
           anchor.textContent = (link.textContent || "").trim();

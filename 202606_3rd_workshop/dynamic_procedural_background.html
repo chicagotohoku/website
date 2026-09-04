@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>3rd CTQA Procedural Quantum Background</title>
+  <meta name="description" content="Interactive procedural quantum-orbit visualization created for the 3rd Workshop on the Chicago-Tohoku Quantum Alliance.">
   <style>
     :root {
       color-scheme: dark;
@@ -11,6 +12,18 @@
 
     * {
       box-sizing: border-box;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     html,
@@ -424,6 +437,7 @@
   </style>
 </head>
 <body class="controls-hidden">
+  <h1 class="visually-hidden">3rd CTQA Procedural Quantum Background</h1>
   <canvas id="scene" aria-label="Procedural animated quantum background"></canvas>
   <div id="titleScrim" class="title-scrim" aria-hidden="true"></div>
   <img id="titleOverlay" class="title-overlay" src="ctqa_title_overlay.svg" alt="3rd CTQA workshop title overlay">
