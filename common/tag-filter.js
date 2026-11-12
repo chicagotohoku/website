@@ -10,6 +10,7 @@ let currentSort = "desc";
 let currentYear = "all";
 const tagPalette = {
   all: { color: "#68727f", soft: "rgba(104, 114, 127, 0.10)" },
+  hub: { color: "#287f87", soft: "rgba(40, 127, 135, 0.14)" },
   event: { color: "#c07a68", soft: "rgba(192, 122, 104, 0.14)" },
   visit: { color: "#c49c5f", soft: "rgba(196, 156, 95, 0.14)" },
   award: { color: "#a9ab5f", soft: "rgba(169, 171, 95, 0.14)" },
